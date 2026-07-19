@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface PublicLayoutProps {
@@ -6,6 +6,15 @@ interface PublicLayoutProps {
 }
 
 export function PublicLayout({ children }: PublicLayoutProps) {
+  const [showShoppingMall, setShowShoppingMall] = useState(true);
+
+  useEffect(() => {
+    const savedShowMall = localStorage.getItem('show_shopping_mall');
+    if (savedShowMall !== null) {
+      setShowShoppingMall(JSON.parse(savedShowMall));
+    }
+  }, []);
+
   return (
     <div className="text-slate-900 font-sans antialiased min-h-screen flex flex-col bg-[#fbf9f6]">
       {/* TopAppBar */}
@@ -13,10 +22,13 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         <div className="flex justify-between items-center px-5 md:px-10 py-4 w-full max-w-[1440px] mx-auto">
           
           <nav className="hidden md:flex gap-6 items-center">
-            <Link to="/" className="text-sm font-medium text-slate-900 border-b border-slate-900 pb-1">Shop</Link>
-            <Link to="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Brand</Link>
-            <Link to="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Collection</Link>
-            <Link to="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Event</Link>
+            {showShoppingMall && (
+              <Link to="/" className="text-sm font-medium text-slate-900 border-b border-slate-900 pb-1">Shop</Link>
+            )}
+            <Link to="/company?tab=overview" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">회사개요</Link>
+            <Link to="/company?tab=ceo" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">인사말</Link>
+            <Link to="/company?tab=careers" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">채용</Link>
+            <Link to="/company?tab=contact" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">오시는길</Link>
           </nav>
           
           <div className="flex-1 flex justify-center md:justify-center justify-start">
@@ -32,9 +44,11 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             <Link to="/admin/login" className="hover:text-slate-500 transition-colors duration-300 flex items-center justify-center" title="Admin Login">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>person</span>
             </Link>
-            <Link to="#" className="hover:text-slate-500 transition-colors duration-300 flex items-center justify-center">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>shopping_bag</span>
-            </Link>
+            {showShoppingMall && (
+              <Link to="#" className="hover:text-slate-500 transition-colors duration-300 flex items-center justify-center">
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>shopping_bag</span>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -49,47 +63,49 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             <p className="text-sm text-slate-500">Beauty of Joseon</p>
           </div>
 
-          <nav className="flex flex-col gap-1 mb-8">
-            <h3 className="text-xs font-bold text-slate-900 px-4 mb-2 uppercase tracking-widest">Shop</h3>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">category</span>
-              <span>제품 카테고리</span>
-            </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-900 bg-slate-100 font-bold transition-all text-sm">
-              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-              <span>베스트 셀러</span>
-            </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
-              <span>장바구니</span>
-            </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">receipt_long</span>
-              <span>주문 / 결제</span>
-            </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">account_circle</span>
-              <span>마이페이지</span>
-            </Link>
-          </nav>
+          {showShoppingMall && (
+            <nav className="flex flex-col gap-1 mb-8">
+              <h3 className="text-xs font-bold text-slate-900 px-4 mb-2 uppercase tracking-widest">Shop</h3>
+              <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+                <span className="material-symbols-outlined text-[18px]">category</span>
+                <span>제품 카테고리</span>
+              </Link>
+              <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-900 bg-slate-100 font-bold transition-all text-sm">
+                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                <span>베스트 셀러</span>
+              </Link>
+              <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+                <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                <span>장바구니</span>
+              </Link>
+              <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+                <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                <span>주문 / 결제</span>
+              </Link>
+              <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+                <span className="material-symbols-outlined text-[18px]">account_circle</span>
+                <span>마이페이지</span>
+              </Link>
+            </nav>
+          )}
 
           <nav className="flex flex-col gap-1 pb-8">
             <h3 className="text-xs font-bold text-slate-900 px-4 mb-2 uppercase tracking-widest">Company</h3>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+            <Link to="/company?tab=overview" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
               <span className="material-symbols-outlined text-[18px]">auto_stories</span>
-              <span>Brand Story</span>
+              <span>회사개요</span>
             </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">view_carousel</span>
-              <span>Collection</span>
+            <Link to="/company?tab=ceo" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">person_pin</span>
+              <span>대표이사 인사말</span>
             </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">perm_media</span>
-              <span>Media</span>
+            <Link to="/company?tab=careers" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">work</span>
+              <span>채용정보</span>
             </Link>
-            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">support_agent</span>
-              <span>Customer Support</span>
+            <Link to="/company?tab=contact" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">pin_drop</span>
+              <span>찾아오시는 길</span>
             </Link>
           </nav>
 

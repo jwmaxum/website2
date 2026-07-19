@@ -7,6 +7,8 @@ import { ContentRegistration } from './components/ContentRegistration';
 import { ProductManagement } from './components/ProductManagement';
 import { PublicLayout } from './components/PublicLayout';
 import { LandingPage } from './components/LandingPage';
+import { CompanyInfo } from './components/CompanyInfo';
+import { SiteManagement } from './components/SiteManagement';
 
 export default function App() {
   return (
@@ -14,6 +16,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
+        <Route path="/company" element={<PublicLayout><CompanyInfo /></PublicLayout>} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<LoginPage />} />
@@ -21,7 +24,7 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout><Dashboard /></AdminLayout>} />
         <Route path="/admin/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
         
-        <Route path="/admin/site" element={<AdminLayout><div className="p-4">Site Management</div></AdminLayout>} />
+        <Route path="/admin/site" element={<AdminLayout><SiteManagement /></AdminLayout>} />
         <Route path="/admin/menu" element={<AdminLayout><div className="p-4">Menu Management</div></AdminLayout>} />
         
         <Route path="/admin/content" element={<AdminLayout><ContentManagement /></AdminLayout>} />

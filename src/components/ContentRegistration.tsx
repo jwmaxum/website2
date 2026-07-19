@@ -1,6 +1,8 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export function ContentRegistration() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       {/* Header */}
@@ -10,13 +12,22 @@ export function ContentRegistration() {
           <p className="text-sm text-on-surface-variant mt-1">Create and configure a new content article or post.</p>
         </div>
         <div className="flex gap-3">
+          <button 
+            onClick={() => navigate('/admin/content')}
+            className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors"
+          >
+            Cancel
+          </button>
           <button className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors">
             Preview
           </button>
           <button className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors">
             Save Draft
           </button>
-          <button className="px-6 py-2 bg-secondary text-white rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors shadow-sm">
+          <button 
+            onClick={() => navigate('/admin/content')}
+            className="px-6 py-2 bg-secondary text-white rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors shadow-sm"
+          >
             Publish
           </button>
         </div>

@@ -1,10 +1,14 @@
 import { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/Input';
 
 export function LoginPage() {
+  const navigate = useNavigate();
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     // Handle login logic here
+    navigate('/admin/dashboard');
   };
 
   return (
@@ -82,7 +86,6 @@ export function LoginPage() {
             {/* Submit Button */}
             <button 
               type="submit"
-              onClick={() => window.location.href = '/admin/dashboard'}
               className="mt-2 w-full py-3 px-6 bg-secondary text-on-secondary text-sm font-bold tracking-wide rounded-xl shadow-lg shadow-secondary/20 hover:bg-on-secondary-fixed-variant hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-surface-container-lowest active:scale-95 transition-all flex items-center justify-center gap-2 group"
             >
               Login
