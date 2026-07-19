@@ -25,10 +25,10 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             {showShoppingMall && (
               <Link to="/" className="text-sm font-medium text-slate-900 border-b border-slate-900 pb-1">Shop</Link>
             )}
-            <Link to="/company?tab=overview" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">회사개요</Link>
-            <Link to="/company?tab=ceo" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">인사말</Link>
-            <Link to="/company?tab=careers" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">채용</Link>
-            <Link to="/company?tab=contact" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">오시는길</Link>
+            <Link to="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Brand Story</Link>
+            <Link to="/company" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Company</Link>
+            <Link to="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Collection</Link>
+            <Link to="#" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-300">Event</Link>
           </nav>
           
           <div className="flex-1 flex justify-center md:justify-center justify-start">
@@ -91,21 +91,25 @@ export function PublicLayout({ children }: PublicLayoutProps) {
 
           <nav className="flex flex-col gap-1 pb-8">
             <h3 className="text-xs font-bold text-slate-900 px-4 mb-2 uppercase tracking-widest">Company</h3>
-            <Link to="/company?tab=overview" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
               <span className="material-symbols-outlined text-[18px]">auto_stories</span>
-              <span>회사개요</span>
+              <span>Brand Story</span>
             </Link>
-            <Link to="/company?tab=ceo" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">person_pin</span>
-              <span>대표이사 인사말</span>
+            <Link to="/company" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">info</span>
+              <span>Company</span>
             </Link>
-            <Link to="/company?tab=careers" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">work</span>
-              <span>채용정보</span>
+            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">view_carousel</span>
+              <span>Collection</span>
             </Link>
-            <Link to="/company?tab=contact" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
-              <span className="material-symbols-outlined text-[18px]">pin_drop</span>
-              <span>찾아오시는 길</span>
+            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">perm_media</span>
+              <span>Media</span>
+            </Link>
+            <Link to="#" className="flex items-center gap-3 px-4 py-2.5 rounded-md text-slate-600 hover:bg-slate-100 transition-all text-sm font-medium">
+              <span className="material-symbols-outlined text-[18px]">support_agent</span>
+              <span>Customer Support</span>
             </Link>
           </nav>
 
