@@ -27,6 +27,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -34,3 +35,9 @@ jobs:
           projectName: default_website_aistudio2
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notice when Cloudflare API Token is missing
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' }}
+        run: |
+          echo "::notice::CLOUDFLARE_API_TOKEN secret is not set in GitHub Repository Secrets."
+          echo "Cloudflare Pages automatic deployment via GitHub integration is active, or add CLOUDFLARE_API_TOKEN to GitHub Secrets."
