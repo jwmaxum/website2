@@ -33,14 +33,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             )}
           </nav>
           
-          <div className="flex-1 flex justify-center items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 group">
-              <span className="text-2xl font-serif tracking-widest text-slate-900 group-hover:opacity-80 transition-opacity">
-                BEAUTY OF JOSEON
-              </span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                Company Home
-              </span>
+          <div className="flex-1 flex justify-center items-center">
+            <Link to="/" className="text-2xl font-serif tracking-widest text-slate-900 hover:opacity-80 transition-opacity">
+              BEAUTY OF JOSEON
             </Link>
           </div>
           
