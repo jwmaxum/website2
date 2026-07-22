@@ -204,21 +204,74 @@ export function ContentRegistration() {
 
         {/* Sidebar Options */}
         <div className="space-y-6">
-          {/* Thumbnail Image */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-3">
-            <h3 className="text-lg font-semibold text-on-surface">대표 썸네일 이미지 URL</h3>
-            <input 
-              type="text" 
-              value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/..."
-              className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
-            />
-            {thumbnailUrl && (
-              <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-200 mt-2">
-                <img src={thumbnailUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
+          {/* Thumbnail Image Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface">대표 썸네일 이미지 등록</h3>
+            
+            <div className="space-y-3">
+              {/* File Upload Box */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  1. 컴퓨터에서 파일 직접 업로드 (Max 5MB)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+                      if (file.size > MAX_SIZE) {
+                        alert(`이미지 용량이 5MB를 초과합니다. (${(file.size / (1024 * 1024)).toFixed(2)}MB)\n페이지 로딩 속도 최적화를 위해 5MB 이하의 이미지를 업로드해주세요.`);
+                        e.target.value = '';
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        if (event.target?.result) {
+                          setThumbnailUrl(event.target.result as string);
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  ※ 페이지 로딩 속도 최적화를 위해 **최대 5MB 이하**의 이미지(JPG, PNG, WebP)만 허용됩니다.
+                </p>
               </div>
-            )}
+
+              <div className="flex items-center gap-2 my-1">
+                <div className="h-px bg-slate-200 flex-1"></div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase">OR</span>
+                <div className="h-px bg-slate-200 flex-1"></div>
+              </div>
+
+              {/* URL Input Box */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  2. 이미지 웹 URL 주소 직접 입력
+                </label>
+                <input 
+                  type="text" 
+                  value={thumbnailUrl}
+                  onChange={(e) => setThumbnailUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+                />
+              </div>
+
+              {/* Image Preview Box */}
+              {thumbnailUrl && (
+                <div className="pt-2 border-t border-slate-200 space-y-1">
+                  <p className="text-[11px] font-bold text-slate-700">썸네일 미리보기 (Live Preview)</p>
+                  <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-200 shadow-xs">
+                    <img src={thumbnailUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
