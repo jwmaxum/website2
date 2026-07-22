@@ -778,15 +778,81 @@ export function ProductManagement() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">제품 이미지 URL</label>
-                <input
-                  type="text"
-                  value={formImageUrl}
-                  onChange={(e) => setFormImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-800"
-                />
+              {/* Image Upload & URL Selection */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-700">
+                  제품 대표 이미지 등록 (Direct File Upload & URL)
+                </label>
+                
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                  {/* File Upload Box */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      1. 컴퓨터에서 파일 직접 선택 (Max 5MB)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+                          if (file.size > MAX_SIZE) {
+                            alert(`이미지 용량이 5MB를 초과합니다. (${(file.size / (1024 * 1024)).toFixed(2)}MB)\n페이지 로딩 속도 최적화를 위해 5MB 이하의 이미지를 업로드해주세요.`);
+                            e.target.value = '';
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            if (event.target?.result) {
+                              setFormImageUrl(event.target.result as string);
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      ※ 웹 페이지 로딩 속도 최적화를 위해 **최대 5MB 이하**의 이미지(JPG, PNG, WebP)만 허용됩니다.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 my-2">
+                    <div className="h-px bg-slate-200 flex-1"></div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">OR</span>
+                    <div className="h-px bg-slate-200 flex-1"></div>
+                  </div>
+
+                  {/* URL Input Box */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      2. 이미지 웹 URL 주소 직접 입력
+                    </label>
+                    <input
+                      type="text"
+                      value={formImageUrl}
+                      onChange={(e) => setFormImageUrl(e.target.value)}
+                      placeholder="https://images.unsplash.com/..."
+                      className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-slate-800"
+                    />
+                  </div>
+
+                  {/* Image Preview Box */}
+                  {formImageUrl && (
+                    <div className="pt-2 border-t border-slate-200 flex items-center gap-3">
+                      <img
+                        src={formImageUrl}
+                        alt="Preview"
+                        className="w-16 h-16 rounded-lg object-cover border border-slate-300 shrink-0"
+                      />
+                      <div className="text-xs text-slate-500 truncate">
+                        <p className="font-bold text-slate-800">이미지 미리보기 (Live Preview)</p>
+                        <p className="text-[11px] text-slate-400 truncate max-w-xs">{formImageUrl.slice(0, 50)}...</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
