@@ -1,34 +1,93 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MediaPost, initialMediaPosts } from './MediaCenter';
 
 export function ContentRegistration() {
   const navigate = useNavigate();
 
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState<'공지사항' | 'News Room' | '자료실'>('공지사항');
+  const [priority, setPriority] = useState<number>(1);
+  const [content, setContent] = useState('');
+  const [attachmentType, setAttachmentType] = useState<'youtube' | 'pdf' | 'image' | 'file'>('youtube');
+  const [attachmentUrl, setAttachmentUrl] = useState('');
+  const [attachmentName, setAttachmentName] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
+
+  const handlePublish = (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+
+    // Helper to transform standard YouTube link to embed link with autoplay
+    let finalAttachmentUrl = attachmentUrl;
+    if (attachmentType === 'youtube' && attachmentUrl.includes('watch?v=')) {
+      const videoId = attachmentUrl.split('watch?v=')[1]?.split('&')[0];
+      if (videoId) {
+        finalAttachmentUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
+      }
+    }
+
+    const newPost: MediaPost = {
+      id: `post-${Date.now()}`,
+      title: title.trim(),
+      category,
+      content: content || title,
+      date: formattedDate,
+      priority: Number(priority),
+      isPinned: Number(priority) <= 3,
+      author: '관리자 (Admin)',
+      views: 1,
+      attachmentType,
+      attachmentUrl: finalAttachmentUrl,
+      attachmentName: attachmentName || (attachmentType === 'youtube' ? '유튜브 영상 자료' : '첨부 파일'),
+      thumbnailUrl: thumbnailUrl || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80'
+    };
+
+    const saved = localStorage.getItem('media_center_posts');
+    let postsList: MediaPost[] = initialMediaPosts;
+    if (saved) {
+      try {
+        postsList = JSON.parse(saved);
+      } catch (e) {
+        postsList = initialMediaPosts;
+      }
+    }
+
+    const updatedPosts = [newPost, ...postsList];
+    localStorage.setItem('media_center_posts', JSON.stringify(updatedPosts));
+
+    alert('게시물이 성공적으로 등록되었습니다.');
+    navigate('/admin/content');
+  };
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+    <form onSubmit={handlePublish} className="space-y-6 animate-in fade-in duration-500 pb-12">
       {/* Header */}
-      <div className="flex justify-between items-end">
+      <div className="flex justify-between items-end border-b border-outline-variant pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">New Content Entry</h2>
-          <p className="text-sm text-on-surface-variant mt-1">Create and configure a new content article or post.</p>
+          <h2 className="text-2xl font-bold text-on-surface">미디어 콘텐츠 등록 (New Media Entry)</h2>
+          <p className="text-sm text-on-surface-variant mt-1">미디어 센터(공지사항, News Room, 자료실) 게시물을 새로 등록합니다.</p>
         </div>
         <div className="flex gap-3">
           <button 
+            type="button"
             onClick={() => navigate('/admin/content')}
             className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors"
           >
-            Cancel
-          </button>
-          <button className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors">
-            Preview
-          </button>
-          <button className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors">
-            Save Draft
+            취소 (Cancel)
           </button>
           <button 
-            onClick={() => navigate('/admin/content')}
+            type="submit"
             className="px-6 py-2 bg-secondary text-white rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors shadow-sm"
           >
-            Publish
+            게시물 등록 (Publish)
           </button>
         </div>
       </div>
@@ -39,57 +98,105 @@ export function ContentRegistration() {
         <div className="xl:col-span-2 space-y-6">
           
           {/* Basic Info */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">Basic Information</h3>
-            <div className="space-y-4">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface">기본 정보</h3>
+            
+            <div>
+              <label className="block text-sm font-semibold text-on-surface mb-1">게시물 제목 <span className="text-rose-500">*</span></label>
+              <input 
+                type="text" 
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm" 
+                placeholder="게시물 제목을 입력하세요" 
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-on-surface mb-1">Title <span className="text-rose-500">*</span></label>
-                <input type="text" className="w-full px-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50 text-sm" placeholder="Enter content title" />
+                <label className="block text-sm font-semibold text-on-surface mb-1">카테고리 선택</label>
+                <select 
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as any)}
+                  className="w-full px-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm font-medium"
+                >
+                  <option value="공지사항">공지사항 (Notice)</option>
+                  <option value="News Room">News Room</option>
+                  <option value="자료실">자료실 (Resources)</option>
+                </select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-on-surface mb-1">Category</label>
-                  <select className="w-full px-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50 text-sm">
-                    <option>공지사항 (Notice)</option>
-                    <option>FAQ</option>
-                    <option>보도자료 (Press)</option>
-                    <option>이벤트 (Event)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-on-surface mb-1">Author</label>
-                  <input type="text" value="System Admin" disabled className="w-full px-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-sm text-on-surface-variant cursor-not-allowed" />
-                </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-on-surface mb-1">상단 노출 순위 (Priority)</label>
+                <select 
+                  value={priority}
+                  onChange={(e) => setPriority(Number(e.target.value))}
+                  className="w-full px-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm font-medium"
+                >
+                  <option value={1}>★ 1위 (Top 1 - 최상단 고정)</option>
+                  <option value={2}>★ 2위 (Top 2 - 상단 고정)</option>
+                  <option value={3}>★ 3위 (Top 3 - 상단 고정)</option>
+                  <option value={4}>4위 (일반 목록)</option>
+                  <option value={5}>5위 (일반 목록)</option>
+                </select>
               </div>
             </div>
           </div>
 
-          {/* Editor */}
-          <div className="bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden flex flex-col h-[500px]">
-            <div className="p-3 border-b border-outline-variant bg-surface-container-low flex items-center gap-1">
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">format_bold</span></button>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">format_italic</span></button>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">format_underlined</span></button>
-              <div className="w-px h-4 bg-outline-variant mx-2"></div>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">format_align_left</span></button>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">format_align_center</span></button>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">format_list_bulleted</span></button>
-              <div className="w-px h-4 bg-outline-variant mx-2"></div>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">link</span></button>
-              <button className="p-1.5 rounded hover:bg-surface-container text-on-surface-variant"><span className="material-symbols-outlined text-[18px]">image</span></button>
-            </div>
-            <div className="flex-1 p-4 bg-white text-sm text-on-surface-variant outline-none" contentEditable suppressContentEditableWarning>
-              Start typing your content here...
-            </div>
+          {/* HTML Content Body */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-3">
+            <h3 className="text-lg font-semibold text-on-surface">게시물 본문 내용 (HTML/텍스트 작성)</h3>
+            <textarea
+              rows={8}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="게시물 본문 내용을 작성하세요. HTML 태그 또는 일반 텍스트 작성이 가능합니다."
+              className="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-secondary text-sm resize-none"
+            />
           </div>
 
-          {/* Attachments */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">Attachments</h3>
-            <div className="border-2 border-dashed border-outline-variant rounded-xl p-8 flex flex-col items-center justify-center bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
-              <span className="material-symbols-outlined text-[32px] text-outline mb-2">upload_file</span>
-              <p className="text-sm font-semibold text-on-surface">Click or drag files to upload</p>
-              <p className="text-xs text-on-surface-variant mt-1">Supports PDF, DOCX, JPG, PNG (Max 10MB)</p>
+          {/* Attachments Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface">첨부 자료 및 영상 설정</h3>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">첨부 유형</label>
+                <select 
+                  value={attachmentType}
+                  onChange={(e) => setAttachmentType(e.target.value as any)}
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm"
+                >
+                  <option value="youtube">유튜브 영상 (YouTube URL)</option>
+                  <option value="pdf">PDF 문서 (PDF File)</option>
+                  <option value="image">이미지 (Image)</option>
+                  <option value="file">일반 첨부파일 (Zip/Doc)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">첨부파일명 / 표시제목</label>
+                <input 
+                  type="text" 
+                  value={attachmentName}
+                  onChange={(e) => setAttachmentName(e.target.value)}
+                  placeholder="예: 2026_조선미녀_소개서.pdf"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">첨부 URL / YouTube URL (자동재생 설정됨)</label>
+              <input 
+                type="text" 
+                value={attachmentUrl}
+                onChange={(e) => setAttachmentUrl(e.target.value)}
+                placeholder="https://www.youtube.com/embed/... 또는 파일 다운로드 링크"
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm"
+              />
+              <p className="text-xs text-on-surface-variant mt-1">※ 유튜브 링크 입력 시 모달 팝업 및 상세 화면에서 **자동재생 (Autoplay)** 처리됩니다.</p>
             </div>
           </div>
           
@@ -97,65 +204,24 @@ export function ContentRegistration() {
 
         {/* Sidebar Options */}
         <div className="space-y-6">
-          
-          {/* Publishing */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">Publishing</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-on-surface">Visibility</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-                </label>
+          {/* Thumbnail Image */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-3">
+            <h3 className="text-lg font-semibold text-on-surface">대표 썸네일 이미지 URL</h3>
+            <input 
+              type="text" 
+              value={thumbnailUrl}
+              onChange={(e) => setThumbnailUrl(e.target.value)}
+              placeholder="https://images.unsplash.com/..."
+              className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+            />
+            {thumbnailUrl && (
+              <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-200 mt-2">
+                <img src={thumbnailUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-on-surface">Top Fixed (Pinned)</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
-                  <div className="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-                </label>
-              </div>
-              <div className="pt-4 border-t border-outline-variant">
-                <label className="block text-sm font-medium text-on-surface mb-2">Posting Date</label>
-                <input type="datetime-local" className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm text-on-surface" />
-              </div>
-            </div>
+            )}
           </div>
-
-          {/* Thumbnail */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">Thumbnail Image</h3>
-            <div className="aspect-video bg-surface-container rounded-lg border border-outline-variant flex items-center justify-center mb-3 cursor-pointer hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-[32px] text-outline">image</span>
-            </div>
-            <p className="text-xs text-center text-on-surface-variant">Recommended size: 1200 x 630px</p>
-          </div>
-
-          {/* SEO Meta */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-on-surface">SEO Meta</h3>
-              <span className="material-symbols-outlined text-[16px] text-on-surface-variant">info</span>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Meta Title</label>
-                <input type="text" className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Meta Description</label>
-                <textarea rows={3} className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm resize-none"></textarea>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">Keywords</label>
-                <input type="text" placeholder="Comma separated" className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm" />
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
-    </div>
+    </form>
   );
 }

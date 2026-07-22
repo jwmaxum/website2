@@ -8,6 +8,7 @@ import { ProductManagement } from './components/ProductManagement';
 import { PublicLayout } from './components/PublicLayout';
 import { LandingPage } from './components/LandingPage';
 import { CompanyInfo } from './components/CompanyInfo';
+import { MediaCenter } from './components/MediaCenter';
 import { SiteManagement } from './components/SiteManagement';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
         {/* Public Routes */}
         <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
         <Route path="/company" element={<PublicLayout><CompanyInfo /></PublicLayout>} />
+        <Route path="/media" element={<PublicLayout><MediaCenter /></PublicLayout>} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<LoginPage />} />

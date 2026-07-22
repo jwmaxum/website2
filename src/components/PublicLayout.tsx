@@ -27,7 +27,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <nav className="hidden md:flex gap-6 items-center">
             <Link to="/company" className={`text-sm font-medium transition-colors duration-300 ${location.pathname === '/company' ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-0.5' : 'text-slate-600 hover:text-slate-900'}`}>Company</Link>
             <Link to="/company?tab=ceo" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors duration-300">Brand</Link>
-            <Link to="/company?tab=contact" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors duration-300">Media Center</Link>
+            <Link to="/media" className={`text-sm font-medium transition-colors duration-300 ${location.pathname === '/media' ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-0.5' : 'text-slate-600 hover:text-slate-900'}`}>Media Center</Link>
             {showShoppingMall && (
               <Link to="/" className={`text-sm font-medium transition-colors duration-300 ${isShopPage ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-0.5' : 'text-slate-600 hover:text-slate-900'}`}>Shop</Link>
             )}
