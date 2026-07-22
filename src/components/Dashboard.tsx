@@ -167,7 +167,7 @@ export function Dashboard() {
           icon="forum"
           badgeText={pendingInquiries.length > 0 ? 'Action Req.' : '완료'}
           badgeColor={pendingInquiries.length > 0 ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'}
-          linkTo="/admin/content"
+          linkTo="/admin/shop"
         />
         <StatCard
           title="등록 제품 / 베스트"
@@ -273,7 +273,7 @@ export function Dashboard() {
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">Resend 이메일 API를 통해 답변 메일이 즉시 발송됩니다.</p>
               </div>
-              <Link to="/admin/content" className="text-xs font-bold text-slate-900 hover:underline">
+              <Link to="/admin/shop" className="text-xs font-bold text-slate-900 hover:underline">
                 문의 답변하기 ➔
               </Link>
             </div>
@@ -299,7 +299,7 @@ export function Dashboard() {
                       </p>
                     </div>
                     <Link
-                      to="/admin/content"
+                      to="/admin/shop"
                       className="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors shrink-0"
                     >
                       답변 작성
@@ -342,12 +342,22 @@ export function Dashboard() {
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
               <Link
+                to="/admin/shop"
+                className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-slate-800 flex items-center justify-between transition-all"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
+                  쇼핑몰 관리 / FAQ & 1:1 고객문의
+                </span>
+                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+              </Link>
+              <Link
                 to="/admin/content"
                 className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-slate-800 flex items-center justify-between transition-all"
               >
                 <span className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">article</span>
-                  미디어 등록 / FAQ 질문 관리
+                  미디어 센터 게시물 등록 (공지/News/자료실)
                 </span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>

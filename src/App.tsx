@@ -14,6 +14,7 @@ import { UserManagement } from './components/UserManagement';
 import { CustomerMyPage } from './components/CustomerMyPage';
 import { OrderManagement } from './components/OrderManagement';
 import { CustomerSupport } from './components/CustomerSupport';
+import { ShopManagement } from './components/ShopManagement';
 
 export default function App() {
   return (
@@ -39,7 +40,7 @@ export default function App() {
         <Route path="/admin/content/new" element={<AdminLayout><ContentRegistration /></AdminLayout>} />
         
         <Route path="/admin/products" element={<AdminLayout><ProductManagement /></AdminLayout>} />
-        <Route path="/admin/shop" element={<AdminLayout><div className="p-4 bg-white rounded-xl border p-6 font-bold">Shopping Mall Management</div></AdminLayout>} />
+        <Route path="/admin/shop" element={<AdminLayout><ShopManagement /></AdminLayout>} />
         <Route path="/admin/orders" element={<AdminLayout><OrderManagement /></AdminLayout>} />
         <Route path="/admin/customers" element={<AdminLayout><div className="p-4 bg-white rounded-xl border p-6 font-bold">Customer Management</div></AdminLayout>} />
         <Route path="/admin/system" element={<AdminLayout><UserManagement /></AdminLayout>} />
