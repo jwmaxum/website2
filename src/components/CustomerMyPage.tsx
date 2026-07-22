@@ -306,13 +306,6 @@ export function CustomerMyPage() {
               </button>
             </form>
           )}
-
-          <div className="mt-8 pt-6 border-t border-slate-100 text-center text-xs text-slate-400">
-            <span>관리자 콘솔 접속을 원하시나요? </span>
-            <Link to="/admin/login" className="font-bold text-slate-700 underline hover:text-slate-900">
-              Admin Console 로그인
-            </Link>
-          </div>
         </div>
       ) : (
         /* 2. Authenticated State: Customer My Page Dashboard */
