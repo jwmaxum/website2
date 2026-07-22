@@ -788,7 +788,7 @@ export function ProductManagement() {
                   {/* File Upload Box */}
                   <div>
                     <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                      1. 컴퓨터에서 파일 직접 선택 (Max 5MB)
+                      1. 컴퓨터에서 파일 직접 선택 (Max 2MB - 쇼핑몰 최적 표준)
                     </label>
                     <input
                       type="file"
@@ -796,9 +796,9 @@ export function ProductManagement() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+                          const MAX_SIZE = 2 * 1024 * 1024; // 2MB
                           if (file.size > MAX_SIZE) {
-                            alert(`이미지 용량이 5MB를 초과합니다. (${(file.size / (1024 * 1024)).toFixed(2)}MB)\n페이지 로딩 속도 최적화를 위해 5MB 이하의 이미지를 업로드해주세요.`);
+                            alert(`이미지 용량이 2MB를 초과합니다. (${(file.size / (1024 * 1024)).toFixed(2)}MB)\n쇼핑몰 모바일/웹 로딩 속도 최적화를 위해 2MB 이하의 이미지 파일(JPG, PNG, WebP)을 선택해주세요.`);
                             e.target.value = '';
                             return;
                           }
@@ -814,7 +814,7 @@ export function ProductManagement() {
                       className="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer"
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
-                      ※ 웹 페이지 로딩 속도 최적화를 위해 **최대 5MB 이하**의 이미지(JPG, PNG, WebP)만 허용됩니다.
+                      ※ 모바일/웹 페이지 로딩 속도 최적화를 위해 **최대 2MB 이하**의 이미지(JPG, PNG, WebP)만 허용됩니다.
                     </p>
                   </div>
 
