@@ -342,8 +342,8 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           </button>
         </div>
         <div className="col-span-2 lg:col-span-1 flex flex-col gap-3">
-          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('customerService')}</Link>
-          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('faq')}</Link>
+          <Link to="/support?tab=inquiry" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('customerService')}</Link>
+          <Link to="/support?tab=faq" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('faq')}</Link>
           <Link to="/admin/login" className="text-sm text-slate-400 hover:text-slate-700 transition-colors duration-200">{t('console')}</Link>
         </div>
         <div className="col-span-4 lg:col-span-1 flex gap-4 mt-4 lg:mt-0">

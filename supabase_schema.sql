@@ -141,6 +141,68 @@ CREATE POLICY "Staff manage orders"
     FOR ALL
     USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
 
+-- --------------------------------------------------------------------
+-- 6. FAQs Table (자주 묻는 질문 DB)
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.faqs (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    category TEXT NOT NULL,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+
+-- Public read FAQs
+CREATE POLICY "Public read faqs"
+    ON public.faqs
+    FOR SELECT
+    USING (true);
+
+-- Staff manage FAQs
+CREATE POLICY "Staff manage faqs"
+    ON public.faqs
+    FOR ALL
+    USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
+
+
+-- --------------------------------------------------------------------
+-- 7. Customer Inquiries Table (1:1 고객 온라인 문의 DB)
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.customer_inquiries (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    customer_name TEXT NOT NULL,
+    customer_email TEXT NOT NULL,
+    category TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT '접수완료' CHECK (status IN ('접수완료', '답변완료')),
+    reply_content TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    replied_at TIMESTAMPTZ
+);
+
+ALTER TABLE public.customer_inquiries ENABLE ROW LEVEL SECURITY;
+
+-- Public / Customer can insert 1:1 inquiries
+CREATE POLICY "Public insert inquiries"
+    ON public.customer_inquiries
+    FOR INSERT
+    WITH CHECK (true);
+
+-- Customers view own inquiries by email
+CREATE POLICY "Customers view own inquiries"
+    ON public.customer_inquiries
+    FOR SELECT
+    USING (customer_email = current_setting('request.jwt.claims', true)::json ->> 'email');
+
+-- Staff view and reply to all inquiries
+CREATE POLICY "Staff manage inquiries"
+    ON public.customer_inquiries
+    FOR ALL
+    USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
+
 -- ====================================================================
 -- End of Schema
 -- ====================================================================

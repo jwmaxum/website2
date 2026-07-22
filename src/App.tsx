@@ -13,6 +13,7 @@ import { SiteManagement } from './components/SiteManagement';
 import { UserManagement } from './components/UserManagement';
 import { CustomerMyPage } from './components/CustomerMyPage';
 import { OrderManagement } from './components/OrderManagement';
+import { CustomerSupport } from './components/CustomerSupport';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/company" element={<PublicLayout><CompanyInfo /></PublicLayout>} />
         <Route path="/media" element={<PublicLayout><MediaCenter /></PublicLayout>} />
         <Route path="/mypage" element={<PublicLayout><CustomerMyPage /></PublicLayout>} />
+        <Route path="/support" element={<PublicLayout><CustomerSupport /></PublicLayout>} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<LoginPage />} />
