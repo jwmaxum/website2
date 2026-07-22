@@ -23,6 +23,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   });
 
   useEffect(() => {
+    const isAdminLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+    if (!isAdminLoggedIn) {
+      navigate('/admin/login', { replace: true });
+      return;
+    }
+
     const savedName = localStorage.getItem('admin_logged_user_name');
     if (savedName) setUserName(savedName);
 
@@ -37,7 +43,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         // default
       }
     }
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_logged_in');
