@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LanguageCode, supportedLanguages, translations } from '../i18n';
 import { LegalTermsModal } from './LegalTermsModal';
+import { CartModal } from './CartModal';
 
 interface PublicLayoutProps {
   children: ReactNode;
@@ -13,6 +14,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState<LanguageCode>('ko');
   const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | 'businessInfo' | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const location = useLocation();
 
@@ -166,13 +168,13 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             </Link>
 
             {showShoppingMall && (
-              <Link
-                to="/"
+              <button
+                onClick={() => setIsCartOpen(true)}
                 className="p-1.5 hover:text-slate-500 transition-colors duration-300 flex items-center justify-center"
-                title={t('shop')}
+                title={t('cart')}
               >
                 <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
-              </Link>
+              </button>
             )}
           </div>
         </div>
@@ -189,14 +191,14 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                 <span>{t('bestsellers')}</span>
               </Link>
-              <a href="#product-catalog" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              <button onClick={() => setIsCartOpen(true)} className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
                 <span>{t('cart')}</span>
-              </a>
-              <a href="#product-catalog" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              </button>
+              <button onClick={() => setIsCartOpen(true)} className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">receipt_long</span>
                 <span>{t('orders')}</span>
-              </a>
+              </button>
               <Link to="/mypage" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">account_circle</span>
                 <span>{t('mypage')}</span>
@@ -352,6 +354,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
 
       {/* Legal Policy Modal */}
       <LegalTermsModal type={legalModalType} onClose={() => setLegalModalType(null)} />
+
+      {/* Cart & Checkout Modal */}
+      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 }

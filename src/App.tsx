@@ -12,6 +12,7 @@ import { MediaCenter } from './components/MediaCenter';
 import { SiteManagement } from './components/SiteManagement';
 import { UserManagement } from './components/UserManagement';
 import { CustomerMyPage } from './components/CustomerMyPage';
+import { OrderManagement } from './components/OrderManagement';
 
 export default function App() {
   return (
@@ -37,7 +38,7 @@ export default function App() {
         
         <Route path="/admin/products" element={<AdminLayout><ProductManagement /></AdminLayout>} />
         <Route path="/admin/shop" element={<AdminLayout><div className="p-4 bg-white rounded-xl border p-6 font-bold">Shopping Mall Management</div></AdminLayout>} />
-        <Route path="/admin/orders" element={<AdminLayout><div className="p-6 bg-white rounded-xl border space-y-4"><h2 className="text-xl font-bold">주문확인 & 물류관리 (Orders & Logistics)</h2><p className="text-sm text-slate-500">실시간 신규 주문 확인, 송장번호 등록 및 출고 배송 상태를 관리합니다.</p></div></AdminLayout>} />
+        <Route path="/admin/orders" element={<AdminLayout><OrderManagement /></AdminLayout>} />
         <Route path="/admin/customers" element={<AdminLayout><div className="p-4 bg-white rounded-xl border p-6 font-bold">Customer Management</div></AdminLayout>} />
         <Route path="/admin/system" element={<AdminLayout><UserManagement /></AdminLayout>} />
         
