@@ -1,6 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LanguageCode, supportedLanguages, translations } from '../i18n';
+import { LegalTermsModal } from './LegalTermsModal';
 
 interface PublicLayoutProps {
   children: ReactNode;
@@ -11,6 +12,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState<LanguageCode>('ko');
+  const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | 'businessInfo' | null>(null);
 
   const location = useLocation();
 
@@ -327,20 +329,29 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <p className="text-sm text-slate-500 mb-4">Copyright © BEAUTY OF JOSEON {t('rights')}</p>
         </div>
         <div className="col-span-2 lg:col-span-1 flex flex-col gap-3">
-          <Link to="#" className="text-sm text-slate-900 underline transition-colors duration-200">{t('customerService')}</Link>
-          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('faq')}</Link>
-          <Link to="/admin/login" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('console')}</Link>
+          <button onClick={() => setLegalModalType('terms')} className="text-sm text-slate-900 font-bold underline hover:text-slate-600 transition-colors text-left">
+            {t('terms')}
+          </button>
+          <button onClick={() => setLegalModalType('privacy')} className="text-sm text-slate-900 font-bold underline hover:text-slate-600 transition-colors text-left">
+            {t('privacy')}
+          </button>
+          <button onClick={() => setLegalModalType('businessInfo')} className="text-sm text-slate-500 hover:text-slate-900 transition-colors text-left">
+            {t('businessInfo')}
+          </button>
         </div>
         <div className="col-span-2 lg:col-span-1 flex flex-col gap-3">
-          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">Terms of Use</Link>
-          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">Privacy Policy</Link>
-          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">Business Info</Link>
+          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('customerService')}</Link>
+          <Link to="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors duration-200">{t('faq')}</Link>
+          <Link to="/admin/login" className="text-sm text-slate-400 hover:text-slate-700 transition-colors duration-200">{t('console')}</Link>
         </div>
         <div className="col-span-4 lg:col-span-1 flex gap-4 mt-4 lg:mt-0">
           <Link to="#" className="text-slate-500 hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">public</span></Link>
           <Link to="#" className="text-slate-500 hover:text-slate-900 transition-colors"><span className="material-symbols-outlined">mail</span></Link>
         </div>
       </footer>
+
+      {/* Legal Policy Modal */}
+      <LegalTermsModal type={legalModalType} onClose={() => setLegalModalType(null)} />
     </div>
   );
 }
