@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/Input';
+import { StaffUser, initialStaffUsers } from './UserManagement';
 
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -37,17 +38,35 @@ export function LoginPage() {
     e.preventDefault();
     setErrorMessage('');
 
-    if (userId.trim() !== 'siteadmin') {
-      setErrorMessage('아이디 또는 비밀번호가 올바르지 않습니다.');
+    const trimmedId = userId.trim();
+    if (!trimmedId) {
+      setErrorMessage('아이디를 입력해주세요.');
       return;
     }
 
-    const isPasswordChanged = localStorage.getItem('isPasswordChanged') === 'true';
-    const storedHash = localStorage.getItem('admin_password_hash');
+    // Load staff accounts from localStorage
+    let staffList: StaffUser[] = initialStaffUsers;
+    const savedStaff = localStorage.getItem('admin_staff_users');
+    if (savedStaff) {
+      try {
+        staffList = JSON.parse(savedStaff);
+      } catch (err) {
+        staffList = initialStaffUsers;
+      }
+    }
+
+    const foundUser = staffList.find((u) => u.id === trimmedId);
+    if (!foundUser) {
+      setErrorMessage('존재하지 않는 직원 또는 관리자 아이디입니다.');
+      return;
+    }
+
+    const isPasswordChanged = localStorage.getItem(`isPasswordChanged_${foundUser.id}`) === 'true' || foundUser.isPasswordChanged;
+    const storedHash = localStorage.getItem(`admin_password_hash_${foundUser.id}`) || foundUser.passwordHash;
 
     if (!isPasswordChanged) {
       // 최초 또는 임시 비밀번호 상태
-      if (password === '!admin1004') {
+      if (password === '!admin1004' || password === 'admin1004') {
         // 임시 비밀번호 로그인 성공 -> 강제 비밀번호 변경 모달 팝업
         setShowResetModal(true);
       } else {
@@ -58,6 +77,10 @@ export function LoginPage() {
       const inputHash = await hashPassword(password);
       if (storedHash && inputHash === storedHash) {
         localStorage.setItem('admin_logged_in', 'true');
+        localStorage.setItem('admin_logged_user_id', foundUser.id);
+        localStorage.setItem('admin_logged_user_name', foundUser.name);
+        localStorage.setItem('admin_logged_user_role', foundUser.role);
+        localStorage.setItem('admin_logged_user_permissions', JSON.stringify(foundUser.permissions));
         navigate('/admin/dashboard');
       } else {
         setErrorMessage('아이디 또는 비밀번호가 올바르지 않습니다.');
@@ -81,13 +104,27 @@ export function LoginPage() {
 
     setIsSubmittingModal(true);
     try {
-      // Subtle Crypto API SHA-256 암호화
+      const trimmedId = userId.trim() || 'siteadmin';
       const hashedPassword = await hashPassword(newPassword);
-      
-      // LocalStorage에 해시값 및 변경 플래그 저장
-      localStorage.setItem('admin_password_hash', hashedPassword);
-      localStorage.setItem('isPasswordChanged', 'true');
+
+      // LocalStorage에 사용자별 해시값 및 변경 플래그 저장
+      localStorage.setItem(`admin_password_hash_${trimmedId}`, hashedPassword);
+      localStorage.setItem(`isPasswordChanged_${trimmedId}`, 'true');
+
+      // Also update in admin_staff_users list if present
+      const savedStaff = localStorage.getItem('admin_staff_users');
+      let staffList: StaffUser[] = savedStaff ? JSON.parse(savedStaff) : initialStaffUsers;
+      const foundUser = staffList.find((u) => u.id === trimmedId);
+
+      const userPermissions = foundUser ? foundUser.permissions : {
+        dashboard: true, site: true, content: true, products: true, shop: true, orders: true, customers: true, system: true
+      };
+
       localStorage.setItem('admin_logged_in', 'true');
+      localStorage.setItem('admin_logged_user_id', trimmedId);
+      localStorage.setItem('admin_logged_user_name', foundUser ? foundUser.name : '최고 관리자');
+      localStorage.setItem('admin_logged_user_role', foundUser ? foundUser.role : 'superadmin');
+      localStorage.setItem('admin_logged_user_permissions', JSON.stringify(userPermissions));
 
       setShowResetModal(false);
       navigate('/admin/dashboard');
