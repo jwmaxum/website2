@@ -58,23 +58,23 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         {showShoppingMall && isShopPage && (
           <div className="bg-slate-50/90 border-t border-slate-200 px-5 md:px-10 py-2.5">
             <div className="max-w-[1440px] mx-auto flex items-center justify-center gap-6 md:gap-10 overflow-x-auto text-xs md:text-sm font-medium">
-              <Link to="#" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              <a href="#product-catalog" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">category</span>
                 <span>제품 카테고리</span>
-              </Link>
-              <Link to="#" className="flex items-center gap-1.5 text-slate-900 font-bold transition-colors whitespace-nowrap">
+              </a>
+              <Link to="/?filter=bestsellers" className="flex items-center gap-1.5 text-slate-900 font-bold transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
                 <span>베스트 셀러</span>
               </Link>
-              <Link to="#" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              <a href="#product-catalog" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
                 <span>장바구니</span>
-              </Link>
-              <Link to="#" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              </a>
+              <a href="#product-catalog" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">receipt_long</span>
                 <span>주문 / 결제</span>
-              </Link>
-              <Link to="#" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              </a>
+              <Link to="/admin/login" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">account_circle</span>
                 <span>마이페이지</span>
               </Link>
