@@ -24,6 +24,11 @@ CREATE TABLE IF NOT EXISTS public.customer_users (
 -- Enable RLS for Customer Table
 ALTER TABLE public.customer_users ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if re-running script
+DROP POLICY IF EXISTS "Customers can view own profile" ON public.customer_users;
+DROP POLICY IF EXISTS "Customers can update own profile" ON public.customer_users;
+DROP POLICY IF EXISTS "Allow public customer registration" ON public.customer_users;
+
 -- Policy 1: Customer can only view their own profile
 CREATE POLICY "Customers can view own profile"
     ON public.customer_users
@@ -70,6 +75,8 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
 -- Enable RLS for Admin Table (STRICT ISOLATION)
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Restrict admin users table access to authenticated admins" ON public.admin_users;
+
 -- Policy 1: Only Super Admin (siteadmin) or Authenticated Staff can view Admin Users
 CREATE POLICY "Restrict admin users table access to authenticated admins"
     ON public.admin_users
@@ -101,6 +108,9 @@ CREATE TABLE IF NOT EXISTS public.products (
 
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read active products" ON public.products;
+DROP POLICY IF EXISTS "Staff manage products" ON public.products;
+
 -- Public can view active products
 CREATE POLICY "Public read active products"
     ON public.products
@@ -129,6 +139,9 @@ CREATE TABLE IF NOT EXISTS public.orders (
 
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Customers view own orders" ON public.orders;
+DROP POLICY IF EXISTS "Staff manage orders" ON public.orders;
+
 -- Customers can view their own orders
 CREATE POLICY "Customers view own orders"
     ON public.orders
@@ -140,6 +153,7 @@ CREATE POLICY "Staff manage orders"
     ON public.orders
     FOR ALL
     USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
+
 
 -- --------------------------------------------------------------------
 -- 6. FAQs Table (자주 묻는 질문 DB)
@@ -153,6 +167,9 @@ CREATE TABLE IF NOT EXISTS public.faqs (
 );
 
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read faqs" ON public.faqs;
+DROP POLICY IF EXISTS "Staff manage faqs" ON public.faqs;
 
 -- Public read FAQs
 CREATE POLICY "Public read faqs"
@@ -184,6 +201,10 @@ CREATE TABLE IF NOT EXISTS public.customer_inquiries (
 );
 
 ALTER TABLE public.customer_inquiries ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public insert inquiries" ON public.customer_inquiries;
+DROP POLICY IF EXISTS "Customers view own inquiries" ON public.customer_inquiries;
+DROP POLICY IF EXISTS "Staff manage inquiries" ON public.customer_inquiries;
 
 -- Public / Customer can insert 1:1 inquiries
 CREATE POLICY "Public insert inquiries"
