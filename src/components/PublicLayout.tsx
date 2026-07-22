@@ -43,7 +43,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             <Link to="#" className="hover:text-slate-500 transition-colors duration-300 flex items-center justify-center">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>public</span>
             </Link>
-            <Link to="/admin/login" className="hover:text-slate-500 transition-colors duration-300 flex items-center justify-center" title="Admin Login">
+            <Link to="/mypage" className="hover:text-slate-500 transition-colors duration-300 flex items-center justify-center" title="마이페이지 (My Page)">
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>person</span>
             </Link>
             {showShoppingMall && (
@@ -74,7 +74,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                 <span className="material-symbols-outlined text-[18px]">receipt_long</span>
                 <span>주문 / 결제</span>
               </a>
-              <Link to="/admin/login" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+              <Link to="/mypage" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
                 <span className="material-symbols-outlined text-[18px]">account_circle</span>
                 <span>마이페이지</span>
               </Link>

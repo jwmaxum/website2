@@ -11,6 +11,7 @@ import { CompanyInfo } from './components/CompanyInfo';
 import { MediaCenter } from './components/MediaCenter';
 import { SiteManagement } from './components/SiteManagement';
 import { UserManagement } from './components/UserManagement';
+import { CustomerMyPage } from './components/CustomerMyPage';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
         <Route path="/company" element={<PublicLayout><CompanyInfo /></PublicLayout>} />
         <Route path="/media" element={<PublicLayout><MediaCenter /></PublicLayout>} />
+        <Route path="/mypage" element={<PublicLayout><CustomerMyPage /></PublicLayout>} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<LoginPage />} />
