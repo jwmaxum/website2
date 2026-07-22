@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getEmailSettings, sendInquiryReplyEmail, EmailSettings } from '../services/emailService';
 
 export function SiteManagement() {
   const [showShoppingMall, setShowShoppingMall] = useState(true);
@@ -22,12 +23,25 @@ export function SiteManagement() {
   const [contactPhone, setContactPhone] = useState('02-1234-5678');
   const [contactEmail, setContactEmail] = useState('support@beautyofjoseon.com');
 
+  // Email Service Settings (Resend API)
+  const [emailProvider, setEmailProvider] = useState<EmailSettings['provider']>('resend');
+  const [emailApiKey, setEmailApiKey] = useState('');
+  const [emailFromAddr, setEmailFromAddr] = useState('onboarding@resend.dev');
+  const [emailFromName, setEmailFromName] = useState('조선미녀 고객지원팀');
+  const [showApiKey, setShowApiKey] = useState(false);
+
   // Load from localStorage on mount
   useEffect(() => {
     const savedShowMall = localStorage.getItem('show_shopping_mall');
     if (savedShowMall !== null) {
       setShowShoppingMall(JSON.parse(savedShowMall));
     }
+
+    const emailConfig = getEmailSettings();
+    setEmailProvider(emailConfig.provider);
+    setEmailApiKey(emailConfig.apiKey);
+    setEmailFromAddr(emailConfig.fromEmail);
+    setEmailFromName(emailConfig.fromName);
 
     const savedCeoTitle = localStorage.getItem('site_ceo_title');
     if (savedCeoTitle) setCeoTitle(savedCeoTitle);
@@ -77,7 +91,45 @@ export function SiteManagement() {
     localStorage.setItem('site_contact_phone', contactPhone);
     localStorage.setItem('site_contact_email', contactEmail);
 
-    alert('설정이 성공적으로 저장되었습니다!');
+    // Save Email Settings
+    const emailConfig: EmailSettings = {
+      provider: emailProvider,
+      apiKey: emailApiKey.trim(),
+      fromEmail: emailFromAddr.trim() || 'onboarding@resend.dev',
+      fromName: emailFromName.trim() || '조선미녀 고객지원팀',
+      enableBcc: false,
+    };
+    localStorage.setItem('email_service_settings', JSON.stringify(emailConfig));
+
+    alert('사이트 및 이메일 서비스(Resend API) 설정이 성공적으로 저장되었습니다!');
+  };
+
+  const handleTestEmailSend = async () => {
+    const targetEmail = prompt('테스트 이메일을 수신할 이메일 주소를 입력하세요:', contactEmail || 'delivered@resend.dev');
+    if (!targetEmail) return;
+
+    // Temporarily save current form inputs
+    const tempConfig: EmailSettings = {
+      provider: emailProvider,
+      apiKey: emailApiKey.trim(),
+      fromEmail: emailFromAddr.trim() || 'onboarding@resend.dev',
+      fromName: emailFromName.trim() || '조선미녀 고객지원팀',
+      enableBcc: false,
+    };
+    localStorage.setItem('email_service_settings', JSON.stringify(tempConfig));
+
+    const res = await sendInquiryReplyEmail({
+      toEmail: targetEmail.trim(),
+      customerName: '테스트 수신자',
+      subject: 'Resend 이메일 연동 테스트입니다',
+      replyContent: '안녕하세요! 본 메일은 조선미녀 관리자 콘솔에서 발송된 Resend 이메일 연동 테스트 메시지입니다.',
+    });
+
+    if (res.success) {
+      alert(`✅ [${res.provider} 연동 성공]\n${res.message}`);
+    } else {
+      alert(`❌ [${res.provider} 연동 실패]\n${res.message}`);
+    }
   };
 
   return (
@@ -151,6 +203,89 @@ export function SiteManagement() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Email Service Configuration (Resend API) */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-semibold text-on-surface flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-amber-700">mail</span>
+                이메일 발송 서비스 (Resend API)
+              </h3>
+              <span className="px-2.5 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full">
+                3,000건/월 무료
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">이메일 서비스 제공업체 선택</label>
+              <select
+                value={emailProvider}
+                onChange={(e) => setEmailProvider(e.target.value as any)}
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs font-bold"
+              >
+                <option value="resend">Resend (추천 - 3,000건/월 무료, 초고속 REST API)</option>
+                <option value="brevo">Brevo (Sendinblue - 9,000건/월 무료, 소규모 적합)</option>
+                <option value="sendgrid">SendGrid (100건/일 무료)</option>
+                <option value="smtp">커스텀 SMTP 서비스</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Resend API Key 입력</label>
+              <div className="relative">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  value={emailApiKey}
+                  onChange={(e) => setEmailApiKey(e.target.value)}
+                  placeholder="re_123456789..."
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs font-mono pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {showApiKey ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                ※ <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" className="underline text-amber-800 font-bold">Resend 대시보드</a>에서 API Key를 무료 발급받아 입력하세요.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">발신자 이메일 주소 (From Email)</label>
+              <input
+                type="text"
+                value={emailFromAddr}
+                onChange={(e) => setEmailFromAddr(e.target.value)}
+                placeholder="onboarding@resend.dev 또는 help@beautyofjoseon.com"
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">발신자 표시 이름 (From Name)</label>
+              <input
+                type="text"
+                value={emailFromName}
+                onChange={(e) => setEmailFromName(e.target.value)}
+                placeholder="조선미녀 고객지원팀"
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleTestEmailSend}
+              className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg text-xs transition-colors flex items-center justify-center gap-1"
+            >
+              <span className="material-symbols-outlined text-[16px]">send</span>
+              이메일 발송 연동 테스트 (Test Dispatch)
+            </button>
           </div>
         </div>
 

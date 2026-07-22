@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MediaPost, initialMediaPosts } from './MediaCenter';
 import { FAQItem, CustomerInquiry, initialFAQs, initialInquiries } from '../types/SupportTypes';
+import { sendInquiryReplyEmail } from '../services/emailService';
 
 export function ContentManagement() {
   const [activeTab, setActiveTab] = useState<string>('전체');
@@ -143,11 +144,14 @@ export function ContentManagement() {
   };
 
   // Inquiry Reply Handlers
-  const handleSendReply = (inquiryId: string) => {
+  const handleSendReply = async (inquiryId: string) => {
     if (!replyText.trim()) {
       alert('답변 내용을 입력해 주세요.');
       return;
     }
+
+    const targetInquiry = inquiries.find((i) => i.id === inquiryId);
+    if (!targetInquiry) return;
 
     const today = new Date();
     const formattedTime = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')} ${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
@@ -166,8 +170,17 @@ export function ContentManagement() {
 
     saveInquiries(updated);
     setReplyingInquiry(null);
+
+    // Dispatch Email via Resend / Configured Service
+    const emailResult = await sendInquiryReplyEmail({
+      toEmail: targetInquiry.customerEmail,
+      customerName: targetInquiry.customerName,
+      subject: targetInquiry.subject,
+      replyContent: replyText.trim(),
+    });
+
     setReplyText('');
-    alert('고객 1:1 문의 답변 처리가 완료되었습니다.');
+    alert(`[답변 등록 완료]\n${emailResult.message}`);
   };
 
   const filteredPosts = posts.filter((p) => {
