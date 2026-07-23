@@ -11,12 +11,15 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE IF NOT EXISTS public.customer_users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL, -- Client SHA-256 or bcrypt hash
+    password_hash TEXT, -- Client SHA-256 or bcrypt hash (Optional for Social Login)
     name TEXT NOT NULL,
     phone TEXT,
     membership_tier TEXT DEFAULT 'SILVER' CHECK (membership_tier IN ('GOLD VIP', 'SILVER', 'BRONZE')),
     points INT DEFAULT 3000,
     coupons INT DEFAULT 1,
+    provider TEXT DEFAULT 'email' CHECK (provider IN ('email', 'google', 'naver')),
+    provider_id TEXT,
+    avatar_url TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
