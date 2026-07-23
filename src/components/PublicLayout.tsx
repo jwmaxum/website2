@@ -16,9 +16,32 @@ export function PublicLayout({ children }: PublicLayoutProps) {
   const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | 'businessInfo' | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // Dynamic Brand & Favicon States
+  const [brandNameKo, setBrandNameKo] = useState('조선미녀');
+  const [brandNameEn, setBrandNameEn] = useState('BEAUTY OF JOSEON');
+  const [faviconUrl, setFaviconUrl] = useState('');
+
   const location = useLocation();
 
   useEffect(() => {
+    const savedBrandKo = localStorage.getItem('site_brand_name_ko');
+    if (savedBrandKo) setBrandNameKo(savedBrandKo);
+
+    const savedBrandEn = localStorage.getItem('site_brand_name_en');
+    if (savedBrandEn) setBrandNameEn(savedBrandEn);
+
+    const savedFavicon = localStorage.getItem('site_favicon_url');
+    if (savedFavicon) {
+      setFaviconUrl(savedFavicon);
+      let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'shortcut icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      link.href = savedFavicon;
+    }
+
     const savedShowMall = localStorage.getItem('show_shopping_mall');
     if (savedShowMall !== null) {
       setShowShoppingMall(JSON.parse(savedShowMall));
@@ -113,8 +136,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
 
           {/* Logo Center */}
           <div className="flex-1 flex justify-center items-center">
-            <Link to="/" className="text-xl md:text-2xl font-serif tracking-widest text-slate-900 hover:opacity-80 transition-opacity">
-              BEAUTY OF JOSEON
+            <Link to="/" className="text-xl md:text-2xl font-serif tracking-widest text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2">
+              {faviconUrl && <img src={faviconUrl} alt="Logo Icon" className="w-7 h-7 object-contain" />}
+              <span>{brandNameEn || 'BEAUTY OF JOSEON'}</span>
             </Link>
           </div>
 
@@ -327,8 +351,9 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       {/* Footer */}
       <footer className="w-full py-16 px-6 md:px-10 grid grid-cols-4 gap-8 max-w-[1440px] mx-auto bg-white border-t border-slate-200">
         <div className="col-span-4 lg:col-span-1 mb-6 lg:mb-0">
-          <h4 className="text-2xl font-serif uppercase tracking-tighter text-slate-900 mb-4">BEAUTY OF JOSEON</h4>
-          <p className="text-sm text-slate-500 mb-4">Copyright © BEAUTY OF JOSEON {t('rights')}</p>
+          <h4 className="text-2xl font-serif uppercase tracking-tighter text-slate-900 mb-1">{brandNameEn || 'BEAUTY OF JOSEON'}</h4>
+          <p className="text-xs font-bold text-slate-500 mb-4">{brandNameKo || '조선미녀'}</p>
+          <p className="text-xs text-slate-400 mb-4">Copyright © {brandNameEn || 'BEAUTY OF JOSEON'} {t('rights')}</p>
         </div>
         <div className="col-span-2 lg:col-span-1 flex flex-col gap-3">
           <button onClick={() => setLegalModalType('terms')} className="text-sm text-slate-900 font-bold underline hover:text-slate-600 transition-colors text-left">

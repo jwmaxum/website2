@@ -18,6 +18,11 @@ export function SiteManagement() {
   const [careerStatus, setCareerStatus] = useState('현재 마케팅 및 글로벌 영업 직군 채용이 활발하게 진행 중입니다.');
   const [careerPositions, setCareerPositions] = useState('• [신입/경력] 글로벌 브랜드 마케터 (영어가능자 필수)\n• [경력] 국내/해외 화장품 상품 기획자 (BM)\n• [신입/경력] 자사몰 퍼포먼스 마케팅 담당자');
 
+  // Brand Name & Favicon Settings
+  const [brandNameKo, setBrandNameKo] = useState('조선미녀');
+  const [brandNameEn, setBrandNameEn] = useState('BEAUTY OF JOSEON');
+  const [faviconUrl, setFaviconUrl] = useState('');
+
   // Contact Us
   const [contactAddress, setContactAddress] = useState('서울특별시 종로구 율곡로 10길 (운니동, 한방빌딩 4층)');
   const [contactPhone, setContactPhone] = useState('02-1234-5678');
@@ -32,6 +37,15 @@ export function SiteManagement() {
 
   // Load from localStorage on mount
   useEffect(() => {
+    const savedBrandKo = localStorage.getItem('site_brand_name_ko');
+    if (savedBrandKo) setBrandNameKo(savedBrandKo);
+
+    const savedBrandEn = localStorage.getItem('site_brand_name_en');
+    if (savedBrandEn) setBrandNameEn(savedBrandEn);
+
+    const savedFavicon = localStorage.getItem('site_favicon_url');
+    if (savedFavicon) setFaviconUrl(savedFavicon);
+
     const savedShowMall = localStorage.getItem('show_shopping_mall');
     if (savedShowMall !== null) {
       setShowShoppingMall(JSON.parse(savedShowMall));
@@ -74,10 +88,31 @@ export function SiteManagement() {
     if (savedContactPhone) setContactPhone(savedContactPhone);
 
     const savedContactEmail = localStorage.getItem('site_contact_email');
-    if (savedContactEmail) setContactEmail(savedContactEmail);
+    if (savedContactEmail) setEmailFromName(savedContactEmail);
   }, []);
 
+  const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1 * 1024 * 1024) {
+      alert('파비콘 파일 크기는 1MB 이하만 등록 가능합니다.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setFaviconUrl(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = () => {
+    localStorage.setItem('site_brand_name_ko', brandNameKo);
+    localStorage.setItem('site_brand_name_en', brandNameEn);
+    localStorage.setItem('site_favicon_url', faviconUrl);
+
     localStorage.setItem('show_shopping_mall', JSON.stringify(showShoppingMall));
     localStorage.setItem('site_ceo_title', ceoTitle);
     localStorage.setItem('site_ceo_content', ceoContent);
@@ -91,17 +126,31 @@ export function SiteManagement() {
     localStorage.setItem('site_contact_phone', contactPhone);
     localStorage.setItem('site_contact_email', contactEmail);
 
+    // Dynamic Favicon Update in DOM
+    if (faviconUrl) {
+      let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'shortcut icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      link.href = faviconUrl;
+    }
+
+    // Dynamic Document Title Update
+    document.title = `${brandNameKo} | ${brandNameEn}`;
+
     // Save Email Settings
     const emailConfig: EmailSettings = {
       provider: emailProvider,
       apiKey: emailApiKey.trim(),
       fromEmail: emailFromAddr.trim() || 'onboarding@resend.dev',
-      fromName: emailFromName.trim() || '조선미녀 고객지원팀',
+      fromName: emailFromName.trim() || `${brandNameKo} 고객지원팀`,
       enableBcc: false,
     };
     localStorage.setItem('email_service_settings', JSON.stringify(emailConfig));
 
-    alert('사이트 및 이메일 서비스(Resend API) 설정이 성공적으로 저장되었습니다!');
+    alert('브랜드명, 파비콘 및 사이트 설정이 성공적으로 저장되었습니다!');
   };
 
   const handleTestEmailSend = async () => {
@@ -149,8 +198,69 @@ export function SiteManagement() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: Contact Us & Resend Email Settings */}
+        {/* Left Side: Brand Name, Favicon & Contact Us & Resend Email Settings */}
         <div className="lg:col-span-1 space-y-6">
+          {/* Brand Name & Favicon */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface flex items-center gap-2 border-b border-slate-100 pb-3">
+              <span className="material-symbols-outlined text-[20px] text-amber-700">badge</span>
+              회사 / 브랜드명 및 파비콘 설정
+            </h3>
+            
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">한국어 브랜드명 (KR)</label>
+              <input
+                type="text"
+                value={brandNameKo}
+                onChange={(e) => setBrandNameKo(e.target.value)}
+                placeholder="조선미녀"
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm font-bold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">영문 브랜드명 (Header Logo EN)</label>
+              <input
+                type="text"
+                value={brandNameEn}
+                onChange={(e) => setBrandNameEn(e.target.value)}
+                placeholder="BEAUTY OF JOSEON"
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm font-bold tracking-wider font-serif uppercase"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">파비콘 (Favicon) 이미지 URL 또는 직접 등록</label>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={faviconUrl}
+                  onChange={(e) => setFaviconUrl(e.target.value)}
+                  placeholder="https://example.com/favicon.png 또는 파일 선택"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+                />
+                
+                <div className="flex items-center gap-3">
+                  <label className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 transition-colors cursor-pointer flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                    파비콘 파일 직접 업로드 (최대 1MB)
+                    <input
+                      type="file"
+                      accept="image/png, image/svg+xml, image/x-icon, image/jpeg"
+                      onChange={handleFaviconUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {faviconUrl && (
+                    <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                      <img src={faviconUrl} alt="Favicon Preview" className="w-6 h-6 object-contain" />
+                      <span className="text-[10px] text-slate-500 font-bold">미리보기</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
             <h3 className="text-lg font-semibold text-on-surface mb-4">대표 연락처 설정 (Contact Us)</h3>
             <div className="space-y-4">
