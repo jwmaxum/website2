@@ -28,10 +28,15 @@ export function SiteManagement() {
   const [brandNameEn, setBrandNameEn] = useState('BEAUTY OF JOSEON');
   const [faviconUrl, setFaviconUrl] = useState('');
 
-  // Contact Us
-  const [contactAddress, setContactAddress] = useState('서울특별시 종로구 율곡로 10길 (운니동, 한방빌딩 4층)');
-  const [contactPhone, setContactPhone] = useState('02-1234-5678');
-  const [contactEmail, setContactEmail] = useState('support@beautyofjoseon.com');
+  // Contact & Business Info Settings
+  const [businessName, setBusinessName] = useState('주식회사 조선미녀');
+  const [businessRegNum, setBusinessRegNum] = useState('120-88-99881');
+  const [ecommerceNum, setEcommerceNum] = useState('2026-서울강남-01928호');
+  const [privacyOfficer, setPrivacyOfficer] = useState('정보보호관리팀장');
+
+  const [contactAddress, setContactAddress] = useState('서울특별시 강남구 테헤란로 521, 조선미녀 타워 4층');
+  const [contactPhone, setContactPhone] = useState('1544-0000');
+  const [contactEmail, setContactEmail] = useState('help@beautyofjoseon.com');
 
   // Email Service Settings (Resend API)
   const [emailProvider, setEmailProvider] = useState<EmailSettings['provider']>('resend');
@@ -109,6 +114,18 @@ export function SiteManagement() {
 
     const savedContactEmail = localStorage.getItem('site_contact_email');
     if (savedContactEmail) setContactEmail(savedContactEmail);
+
+    const savedBizName = localStorage.getItem('site_business_name');
+    if (savedBizName) setBusinessName(savedBizName);
+
+    const savedBizReg = localStorage.getItem('site_business_reg_num');
+    if (savedBizReg) setBusinessRegNum(savedBizReg);
+
+    const savedEcom = localStorage.getItem('site_ecommerce_num');
+    if (savedEcom) setEcommerceNum(savedEcom);
+
+    const savedOfficer = localStorage.getItem('site_privacy_officer');
+    if (savedOfficer) setPrivacyOfficer(savedOfficer);
   }, []);
 
   const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,9 +201,15 @@ export function SiteManagement() {
     localStorage.setItem('site_overview_global_offices', overviewGlobalOffices);
     localStorage.setItem('site_career_status', careerStatus);
     localStorage.setItem('site_career_positions', careerPositions);
+    
+    // Contact & Business Info Items
     localStorage.setItem('site_contact_address', contactAddress);
     localStorage.setItem('site_contact_phone', contactPhone);
     localStorage.setItem('site_contact_email', contactEmail);
+    localStorage.setItem('site_business_name', businessName);
+    localStorage.setItem('site_business_reg_num', businessRegNum);
+    localStorage.setItem('site_ecommerce_num', ecommerceNum);
+    localStorage.setItem('site_privacy_officer', privacyOfficer);
 
     // Dynamic Favicon Update in DOM
     if (faviconUrl) {
@@ -323,34 +346,89 @@ export function SiteManagement() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">대표 연락처 설정 (Contact Us)</h3>
-            <div className="space-y-4">
+          {/* Business & Contact Information Card */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface flex items-center gap-2 border-b border-slate-100 pb-3">
+              <span className="material-symbols-outlined text-[20px] text-amber-700">domain</span>
+              사업자 정보 고지 및 대표 연락처 설정
+            </h3>
+
+            <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">회사 주소</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">상호명 (법인/사업자명)</label>
+                <input
+                  type="text"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="주식회사 조선미녀"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">사업자등록번호</label>
+                <input
+                  type="text"
+                  value={businessRegNum}
+                  onChange={(e) => setBusinessRegNum(e.target.value)}
+                  placeholder="120-88-99881"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">통신판매업 신고번호</label>
+                <input
+                  type="text"
+                  value={ecommerceNum}
+                  onChange={(e) => setEcommerceNum(e.target.value)}
+                  placeholder="2026-서울강남-01928호"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">사업장 주소지</label>
                 <input
                   type="text"
                   value={contactAddress}
                   onChange={(e) => setContactAddress(e.target.value)}
-                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm"
+                  placeholder="서울특별시 강남구 테헤란로 521, 조선미녀 타워"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">대표 전화번호</label>
-                <input
-                  type="text"
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm"
-                />
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">대표 전화번호</label>
+                  <input
+                    type="text"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="1544-0000"
+                    className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-on-surface mb-1">대표 이메일</label>
+                  <input
+                    type="text"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    placeholder="help@beautyofjoseon.com"
+                    className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
+                  />
+                </div>
               </div>
+
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">대표 이메일</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">개인정보보호책임자</label>
                 <input
                   type="text"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm"
+                  value={privacyOfficer}
+                  onChange={(e) => setPrivacyOfficer(e.target.value)}
+                  placeholder="정보보호관리팀장 또는 홍길동 팀장"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
                 />
               </div>
             </div>

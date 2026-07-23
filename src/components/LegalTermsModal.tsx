@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface LegalTermsModalProps {
   type: 'terms' | 'privacy' | 'businessInfo' | null;
@@ -7,6 +7,42 @@ interface LegalTermsModalProps {
 
 export function LegalTermsModal({ type, onClose }: LegalTermsModalProps) {
   const [activeTab, setActiveTab] = useState<'terms' | 'privacy' | 'businessInfo'>(type || 'terms');
+
+  // Business info states loaded from localStorage
+  const [businessName, setBusinessName] = useState('주식회사 조선미녀');
+  const [ceoName, setCeoName] = useState('구태원 대표이사');
+  const [businessRegNum, setBusinessRegNum] = useState('120-88-99881');
+  const [ecommerceNum, setEcommerceNum] = useState('2026-서울강남-01928호');
+  const [contactAddress, setContactAddress] = useState('서울특별시 강남구 테헤란로 521, 조선미녀 타워');
+  const [contactPhone, setContactPhone] = useState('1544-0000');
+  const [contactEmail, setContactEmail] = useState('help@beautyofjoseon.com');
+  const [privacyOfficer, setPrivacyOfficer] = useState('정보보호관리팀장');
+
+  useEffect(() => {
+    const savedBizName = localStorage.getItem('site_business_name');
+    if (savedBizName) setBusinessName(savedBizName);
+
+    const savedCeoName = localStorage.getItem('site_ceo_name');
+    if (savedCeoName) setCeoName(savedCeoName);
+
+    const savedReg = localStorage.getItem('site_business_reg_num');
+    if (savedReg) setBusinessRegNum(savedReg);
+
+    const savedEcom = localStorage.getItem('site_ecommerce_num');
+    if (savedEcom) setEcommerceNum(savedEcom);
+
+    const savedAddr = localStorage.getItem('site_contact_address');
+    if (savedAddr) setContactAddress(savedAddr);
+
+    const savedPhone = localStorage.getItem('site_contact_phone');
+    if (savedPhone) setContactPhone(savedPhone);
+
+    const savedEmail = localStorage.getItem('site_contact_email');
+    if (savedEmail) setContactEmail(savedEmail);
+
+    const savedOfficer = localStorage.getItem('site_privacy_officer');
+    if (savedOfficer) setPrivacyOfficer(savedOfficer);
+  }, []);
 
   if (!type) return null;
 
@@ -62,7 +98,7 @@ export function LegalTermsModal({ type, onClose }: LegalTermsModalProps) {
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-slate-900">제1조 (목적)</h3>
               <p>
-                본 약관은 주식회사 조선미녀(이하 "회사")가 운영하는 인터넷 사이트 및 사이버몰(이하 "몰")에서 제공하는 전자상거래 관련 서비스(이하 "서비스")를 이용함에 있어 몰과 이용자의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.
+                본 약관은 {businessName}(이하 "회사")가 운영하는 인터넷 사이트 및 사이버몰(이하 "몰")에서 제공하는 전자상거래 관련 서비스(이하 "서비스")를 이용함에 있어 몰과 이용자의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.
               </p>
 
               <h3 className="text-sm font-bold text-slate-900">제2조 (정의)</h3>
@@ -74,7 +110,7 @@ export function LegalTermsModal({ type, onClose }: LegalTermsModalProps) {
 
               <h3 className="text-sm font-bold text-slate-900">제3조 (약관의 명시와 개정)</h3>
               <p>
-                1. "몰"은 이 약관의 내용과 상호, 영업소 소재지, 대표자의 성명, 사업자등록번호, 연락처 등을 이용자가 알 수 있도록 사이트의 초기 서비스화면에 게시합니다.<br />
+                1. "몰"은 이 약관의 내용과 상호({businessName}), 영업소 소재지({contactAddress}), 대표자의 성명({ceoName}), 사업자등록번호({businessRegNum}), 연락처({contactPhone}) 등을 이용자가 알 수 있도록 사이트의 초기 서비스화면에 게시합니다.<br />
                 2. "몰"은 전자상거래 등에서의 소비자보호에 관한 법률, 약관의 규제에 관한 법률 등 관련 법령을 위배하지 않는 범위에서 이 약관을 개정할 수 있습니다.
               </p>
 
@@ -120,39 +156,39 @@ export function LegalTermsModal({ type, onClose }: LegalTermsModalProps) {
 
               <h3 className="text-sm font-bold text-slate-900">4. 개인정보 보호책임자 및 상담창구</h3>
               <p>
-                - 개인정보 보호책임자: 최고보안책임자 (CISO)<br />
-                - 이메일 문의: privacy@beautyofjoseon.com<br />
-                - 고객센터: 1544-0000 (평일 09:00 ~ 18:00)
+                - 개인정보 보호책임자: {privacyOfficer}<br />
+                - 이메일 문의: {contactEmail}<br />
+                - 고객센터: {contactPhone} (평일 09:00 ~ 18:00)
               </p>
             </div>
           )}
 
           {activeTab === 'businessInfo' && (
             <div className="space-y-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
-                  <span className="font-bold text-slate-800 block">상호명 / 대표자</span>
-                  <span className="text-slate-600">주식회사 조선미녀 / 대표이사</span>
+                  <span className="font-bold text-slate-800 block mb-0.5">상호명 / 대표자</span>
+                  <span className="text-slate-600 font-bold">{businessName} / {ceoName}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block">사업자등록번호</span>
-                  <span className="text-slate-600">120-88-99881 [사업자정보확인]</span>
+                  <span className="font-bold text-slate-800 block mb-0.5">사업자등록번호</span>
+                  <span className="text-slate-600 font-mono">{businessRegNum} <a href="https://www.ftc.go.kr" target="_blank" rel="noreferrer" className="text-slate-400 underline ml-1">[사업자정보확인]</a></span>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block">통신판매업 신고번호</span>
-                  <span className="text-slate-600">2026-서울강남-01928호</span>
+                  <span className="font-bold text-slate-800 block mb-0.5">통신판매업 신고번호</span>
+                  <span className="text-slate-600">{ecommerceNum}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block">주소지</span>
-                  <span className="text-slate-600">서울특별시 강남구 테헤란로 521, 조선미녀 타워</span>
+                  <span className="font-bold text-slate-800 block mb-0.5">주소지</span>
+                  <span className="text-slate-600">{contactAddress}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block">고객센터 문의</span>
-                  <span className="text-slate-600">1544-0000 (help@beautyofjoseon.com)</span>
+                  <span className="font-bold text-slate-800 block mb-0.5">고객센터 문의</span>
+                  <span className="text-slate-600">{contactPhone} ({contactEmail})</span>
                 </div>
                 <div>
-                  <span className="font-bold text-slate-800 block">개인정보보호책임자</span>
-                  <span className="text-slate-600">정보보호관리팀장</span>
+                  <span className="font-bold text-slate-800 block mb-0.5">개인정보보호책임자</span>
+                  <span className="text-slate-600">{privacyOfficer}</span>
                 </div>
               </div>
             </div>
