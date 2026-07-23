@@ -2,6 +2,8 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Order, CourierCompany, initialOrders } from '../types/OrderTypes';
 import { getCustomerSavedAddress } from '../lib/customerAddresses';
+import { cancelPaymentRecord } from '../lib/tossPayments';
+import { CourierTrackingModal } from './CourierTrackingModal';
 
 export interface CustomerUser {
   id: string;
@@ -165,6 +167,33 @@ export function CustomerMyPage() {
     } else {
       setGuestSearchError('일치하는 비회원 주문 내역을 찾을 수 없습니다. 주문번호와 이메일을 다시 확인해 주세요.');
     }
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    if (!confirm(`주문 (${orderId})을 취소하시겠습니까?\n취소 시 토스페이먼츠 결제건이 자동으로 환불 처리됩니다.`)) {
+      return;
+    }
+
+    const updated = allOrders.map((o) => {
+      if (o.id === orderId) {
+        return {
+          ...o,
+          status: '주문취소' as const,
+        };
+      }
+      return o;
+    });
+
+    setAllOrders(updated);
+    localStorage.setItem('shop_orders', JSON.stringify(updated));
+
+    if (guestFoundOrder && guestFoundOrder.id === orderId) {
+      setGuestFoundOrder({ ...guestFoundOrder, status: '주문취소' });
+    }
+
+    // Process PG Payment Cancellation in Supabase & Local DB
+    await cancelPaymentRecord(orderId, '고객 마이페이지에서 주문 취소');
+    alert(`✅ 주문 (${orderId}) 및 결제 환불 처리가 정상 완료되었습니다.`);
   };
 
   const handleLogout = () => {
@@ -463,6 +492,18 @@ export function CustomerMyPage() {
                       </p>
                     )}
                   </div>
+
+                  {guestFoundOrder.status !== '주문취소' && guestFoundOrder.status !== '배송완료' && (
+                    <div className="pt-3 border-t border-slate-200 flex justify-between items-center flex-wrap gap-2">
+                      <button
+                        onClick={() => handleCancelOrder(guestFoundOrder.id)}
+                        className="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-colors flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">cancel</span>
+                        주문취소 / 결제환불 요청
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -566,14 +607,23 @@ export function CustomerMyPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 w-full md:w-auto">
+                    <div className="flex gap-2 w-full md:w-auto flex-wrap">
                       {ord.trackingNumber && (
                         <button
                           onClick={() => setActiveTrackingOrder(ord)}
-                          className="flex-1 md:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center justify-center gap-1.5"
+                          className="flex-1 md:flex-none px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center justify-center gap-1.5"
                         >
                           <span className="material-symbols-outlined text-[16px]">local_shipping</span>
-                          🔍 {ord.courier || '택배'} API 실시간 추적
+                          🔍 {ord.courier || '택배'} API 추적
+                        </button>
+                      )}
+                      {ord.status !== '주문취소' && ord.status !== '배송완료' && (
+                        <button
+                          onClick={() => handleCancelOrder(ord.id)}
+                          className="flex-1 md:flex-none px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-colors flex items-center justify-center gap-1"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">cancel</span>
+                          주문취소 요청
                         </button>
                       )}
                     </div>

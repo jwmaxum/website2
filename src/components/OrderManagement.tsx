@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Order, CourierCompany, initialOrders } from '../types/OrderTypes';
+import { cancelPaymentRecord } from '../lib/tossPayments';
 import { CourierTrackingModal } from './CourierTrackingModal';
 
 export function OrderManagement() {
@@ -71,7 +72,14 @@ export function OrderManagement() {
     alert(`주문 (${orderId})의 택배사[${selectedCourier}] 및 송장번호가 등록되었습니다.`);
   };
 
-  const handleUpdateStatus = (orderId: string, status: Order['status']) => {
+  const handleUpdateStatus = async (orderId: string, status: Order['status']) => {
+    if (status === '주문취소') {
+      if (!confirm(`주문 (${orderId})을 취소하고 토스페이먼츠 결제 승인을 환불 처리하시겠습니까?`)) {
+        return;
+      }
+      await cancelPaymentRecord(orderId, '관리자 취소 및 환불 처리');
+    }
+
     const updated = orders.map((o) => {
       if (o.id === orderId) {
         return { ...o, status };
@@ -79,6 +87,9 @@ export function OrderManagement() {
       return o;
     });
     saveOrders(updated);
+    if (status === '주문취소') {
+      alert(`✅ 주문 (${orderId}) 및 토스페이 결제건이 성공적으로 취소/환불 처리되었습니다.`);
+    }
   };
 
   const filteredOrders = orders.filter((o) => {
@@ -303,18 +314,28 @@ export function OrderManagement() {
                             ? 'bg-amber-100 text-amber-800'
                             : ord.status === '배송중'
                             ? 'bg-blue-100 text-blue-800'
-                            : 'bg-emerald-100 text-emerald-800'
+                            : ord.status === '배송완료'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-rose-100 text-rose-800'
                         }`}>
                           {ord.status}
                         </span>
 
-                        <div className="flex justify-center gap-1 text-[11px]">
+                        <div className="flex flex-col items-center gap-1 text-[11px] pt-1">
                           {ord.status === '배송중' && (
                             <button
                               onClick={() => handleUpdateStatus(ord.id, '배송완료')}
                               className="text-emerald-700 underline font-bold hover:text-emerald-900"
                             >
                               배송완료 처리
+                            </button>
+                          )}
+                          {ord.status !== '주문취소' && (
+                            <button
+                              onClick={() => handleUpdateStatus(ord.id, '주문취소')}
+                              className="text-rose-600 underline font-bold hover:text-rose-800"
+                            >
+                              🚫 주문취소 & 환불
                             </button>
                           )}
                         </div>
