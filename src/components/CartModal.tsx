@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CartItem, Order, OrderItem, initialOrders } from '../types/OrderTypes';
 import { getTossPaymentsConfig, savePaymentRecord, TossPaymentRecord } from '../lib/tossPayments';
 import { saveCustomerAddress, getCustomerSavedAddress } from '../lib/customerAddresses';
+import { updateCustomerTierOnOrder } from '../services/membershipService';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -182,6 +183,12 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
     let ordersList: Order[] = savedOrders ? JSON.parse(savedOrders) : initialOrders;
     ordersList = [newOrder, ...ordersList];
     localStorage.setItem('shop_orders', JSON.stringify(ordersList));
+
+    // Update Customer Tier Automatically based on Backend Policy
+    const tierResult = await updateCustomerTierOnOrder(guestEmail.trim());
+    if (tierResult.upgraded) {
+      alert(`🎉 축하합니다! 회원님의 결제 횟수 조건 충족으로 [${tierResult.newTier}] 등급으로 자동 승급되셨습니다!\n(승급 축하 보너스 적립금 +${tierResult.bonusPoints?.toLocaleString()}P 지급 완료)`);
+    }
 
     // Clear Cart
     saveCart([]);
