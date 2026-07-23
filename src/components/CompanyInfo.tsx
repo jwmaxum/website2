@@ -14,6 +14,18 @@ export function CompanyInfo() {
   const [ceoContent, setCeoContent] = useState('안녕하십니까, 조선미녀(Beauty of Joseon) 대표이사 구태원입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
   const [ceoSignOff, setCeoSignOff] = useState('조선미녀 대표이사 구태원 드림');
 
+  const [overviewMission, setOverviewMission] = useState('전통 한방 원료에 현대적 기술을 결합하여 현대인의 피부 고민을 덜어주는 클린 뷰티의 글로벌 스탠다드');
+  const [overviewEstYear, setOverviewEstYear] = useState('2020');
+  const [overviewEmployees, setOverviewEmployees] = useState('120');
+  const [overviewGlobalOffices, setOverviewGlobalOffices] = useState('3');
+
+  const [careerStatus, setCareerStatus] = useState('현재 마케팅 및 글로벌 영업 직군 채용이 활발하게 진행 중입니다.');
+  const [careerPositions, setCareerPositions] = useState('• [신입/경력] 글로벌 브랜드 마케터 (영어가능자 필수)\n• [경력] 국내/해외 화장품 상품 기획자 (BM)\n• [신입/경력] 자사몰 퍼포먼스 마케팅 담당자');
+
+  const [contactAddress, setContactAddress] = useState('서울특별시 종로구 율곡로 10길 (운니동, 한방빌딩 4층)');
+  const [contactPhone, setContactPhone] = useState('02-1234-5678');
+  const [contactEmail, setContactEmail] = useState('support@beautyofjoseon.com');
+
   useEffect(() => {
     const savedCeoName = localStorage.getItem('site_ceo_name');
     if (savedCeoName) setCeoName(savedCeoName);
