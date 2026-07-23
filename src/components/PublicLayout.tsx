@@ -105,8 +105,12 @@ export function PublicLayout({ children }: PublicLayoutProps) {
               {t('company')}
             </Link>
             <Link
-              to="/company?tab=ceo"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors duration-300"
+              to="/brand"
+              className={`text-sm font-medium transition-colors duration-300 ${
+                location.pathname === '/brand'
+                  ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-0.5'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
               {t('brand')}
             </Link>
@@ -249,7 +253,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
                   <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                 </Link>
                 <Link
-                  to="/company?tab=ceo"
+                  to="/brand"
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-3 bg-slate-50 rounded-xl text-slate-900 flex items-center justify-between"
                 >

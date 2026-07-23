@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { MediaPost, initialMediaPosts } from './MediaCenter';
+import { BrandManagement } from './BrandManagement';
 
 export function ContentManagement() {
+  const [mainTab, setMainTab] = useState<'media' | 'brand'>('media');
   const [activeTab, setActiveTab] = useState<string>('전체');
   const [posts, setPosts] = useState<MediaPost[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,19 +51,52 @@ export function ContentManagement() {
         <div>
           <h2 className="text-2xl font-bold text-on-surface">콘텐츠 & 미디어 관리 (Content & Media Management)</h2>
           <p className="text-sm text-on-surface-variant mt-1">
-            콘텐츠 관리 권한 직원이 미디어 센터 게시물(공지사항, News Room, 자료실) 등록 및 노출을 담당합니다.
+            미디어 센터 게시물(공지/News/자료실) 및 **럭셔리 브랜드 스토리 페이지 영상·이미지 커스텀**을 종합 관리합니다.
           </p>
         </div>
-        <div className="flex gap-3">
-          <NavLink
-            to="/admin/content/new"
-            className="px-4 py-2 bg-secondary text-white rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors shadow-sm flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            새 미디어 콘텐츠 등록
-          </NavLink>
-        </div>
+        {mainTab === 'media' && (
+          <div className="flex gap-3">
+            <NavLink
+              to="/admin/content/new"
+              className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              새 미디어 콘텐츠 등록
+            </NavLink>
+          </div>
+        )}
       </div>
+
+      {/* Main Mode Tabs */}
+      <div className="flex space-x-1 border-b border-slate-200">
+        <button
+          onClick={() => setMainTab('media')}
+          className={`px-5 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
+            mainTab === 'media'
+              ? 'border-secondary text-secondary'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">article</span>
+          미디어 센터 게시물 관리 ({posts.length}건)
+        </button>
+        <button
+          onClick={() => setMainTab('brand')}
+          className={`px-5 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
+            mainTab === 'brand'
+              ? 'border-secondary text-secondary'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">movie</span>
+          ✨ 브랜드 스토리 커스텀 관리 (/brand 영상·갤러리)
+        </button>
+      </div>
+
+      {mainTab === 'brand' ? (
+        <BrandManagement />
+      ) : (
+        <>
 
       {/* Category Tabs */}
       <div className="flex space-x-1 border-b border-outline-variant overflow-x-auto hide-scrollbar">
@@ -151,6 +186,8 @@ export function ContentManagement() {
           </table>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

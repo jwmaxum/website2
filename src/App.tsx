@@ -15,6 +15,7 @@ import { CustomerMyPage } from './components/CustomerMyPage';
 import { OrderManagement } from './components/OrderManagement';
 import { CustomerSupport } from './components/CustomerSupport';
 import { ShopManagement } from './components/ShopManagement';
+import { BrandStory } from './components/BrandStory';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
+        <Route path="/brand" element={<PublicLayout><BrandStory /></PublicLayout>} />
         <Route path="/company" element={<PublicLayout><CompanyInfo /></PublicLayout>} />
         <Route path="/media" element={<PublicLayout><MediaCenter /></PublicLayout>} />
         <Route path="/mypage" element={<PublicLayout><CustomerMyPage /></PublicLayout>} />
