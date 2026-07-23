@@ -6,18 +6,20 @@ export function CompanyInfo() {
   const activeTab = searchParams.get('tab') || 'overview';
 
   // Configurable states loaded from localStorage
-  const [ceoName, setCeoName] = useState('구태원 대표이사');
-  const [ceoPosition, setCeoPosition] = useState('주식회사 조선미녀 대표이사 (CEO & Founder)');
+  const [ceoName, setCeoName] = useState('이소희 대표이사');
+  const [ceoPosition, setCeoPosition] = useState('주식회사 원데이즈뷰티 대표이사 (CEO & Founder)');
   const [ceoImageUrl, setCeoImageUrl] = useState('');
   const [ceoSignatureUrl, setCeoSignatureUrl] = useState('');
   const [ceoTitle, setCeoTitle] = useState('자연의 지혜와 정성을 가득 담아 피부 본연의 아름다움을 선물합니다.');
-  const [ceoContent, setCeoContent] = useState('안녕하십니까, 조선미녀(Beauty of Joseon) 대표이사 구태원입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
-  const [ceoSignOff, setCeoSignOff] = useState('조선미녀 대표이사 구태원 드림');
+  const [ceoContent, setCeoContent] = useState('안녕하십니까, 원데이즈뷰티(OneDays Beauty) 대표이사 이소희입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
+  const [ceoSignOff, setCeoSignOff] = useState('원데이즈뷰티 대표이사 이소희 드림');
 
   const [overviewMission, setOverviewMission] = useState('전통 한방 원료에 현대적 기술을 결합하여 현대인의 피부 고민을 덜어주는 클린 뷰티의 글로벌 스탠다드');
   const [overviewEstYear, setOverviewEstYear] = useState('2020');
   const [overviewEmployees, setOverviewEmployees] = useState('120');
   const [overviewGlobalOffices, setOverviewGlobalOffices] = useState('3');
+  const [businessTitle, setBusinessTitle] = useState('사업영역 (Business)');
+  const [businessContent, setBusinessContent] = useState('조선미녀는 조선 시대 여성들이 피부를 맑고 투명하게 가꾸기 위해 자연에서 얻은 원료를 활용했던 지혜에 영감을 받았습니다. 인삼, 쌀, 벌꿀 등 전통적인 한방 성분을 엄선하고 현대적인 포뮬러 기술을 결합하여 현대 스킨케어 고민을 자극 없이 해결하는 라이프스타일 뷰티 브랜드입니다.\n\n현재 아시아뿐만 아니라 미주, 유럽 등 전 세계 다양한 국가에서 사랑받으며 한국 전통 스킨케어의 아름다움을 글로벌 시장에 널리 알리고 있습니다.');
 
   const [careerStatus, setCareerStatus] = useState('현재 마케팅 및 글로벌 영업 직군 채용이 활발하게 진행 중입니다.');
   const [careerPositions, setCareerPositions] = useState('• [신입/경력] 글로벌 브랜드 마케터 (영어가능자 필수)\n• [경력] 국내/해외 화장품 상품 기획자 (BM)\n• [신입/경력] 자사몰 퍼포먼스 마케팅 담당자');
@@ -60,6 +62,12 @@ export function CompanyInfo() {
     const savedOverviewGlobalOffices = localStorage.getItem('site_overview_global_offices');
     if (savedOverviewGlobalOffices) setOverviewGlobalOffices(savedOverviewGlobalOffices);
 
+    const savedBusinessTitle = localStorage.getItem('site_overview_business_title');
+    if (savedBusinessTitle) setBusinessTitle(savedBusinessTitle);
+
+    const savedBusinessContent = localStorage.getItem('site_overview_business_content');
+    if (savedBusinessContent) setBusinessContent(savedBusinessContent);
+
     const savedCareerStatus = localStorage.getItem('site_career_status');
     if (savedCareerStatus) setCareerStatus(savedCareerStatus);
 
@@ -96,11 +104,10 @@ export function CompanyInfo() {
           <button
             key={tab.id}
             onClick={() => setSearchParams({ tab: tab.id })}
-            className={`px-6 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-300 ${
-              activeTab === tab.id
-                ? 'border-slate-900 text-slate-900 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-700'
-            }`}
+            className={`px-6 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === tab.id
+              ? 'border-slate-900 text-slate-900 font-semibold'
+              : 'border-transparent text-slate-400 hover:text-slate-700'
+              }`}
           >
             {tab.name}
           </button>
@@ -134,15 +141,16 @@ export function CompanyInfo() {
               </div>
             </div>
 
-            {/* Detail Block */}
-            <div className="space-y-6 pt-6">
-              <h3 className="text-lg font-bold text-slate-900 border-l-4 border-slate-800 pl-3">브랜드 소개</h3>
-              <p className="text-slate-600 leading-relaxed text-sm">
-                조선미녀는 조선 시대 여성들이 피부를 맑고 투명하게 가꾸기 위해 자연에서 얻은 원료를 활용했던 지혜에 영감을 받았습니다. 인삼, 쌀, 벌꿀 등 전통적인 한방 성분을 엄선하고 현대적인 포뮬러 기술을 결합하여 현대 스킨케어 고민을 자극 없이 해결하는 라이프스타일 뷰티 브랜드입니다.
-              </p>
-              <p className="text-slate-600 leading-relaxed text-sm">
-                현재 아시아뿐만 아니라 미주, 유럽 등 전 세계 다양한 국가에서 사랑받으며 한국 전통 스킨케어의 아름다움을 글로벌 시장에 널리 알리고 있습니다.
-              </p>
+            {/* Business Area Block */}
+            <div className="space-y-4 pt-6 border-t border-slate-100">
+              <h3 className="text-lg font-bold text-slate-900 border-l-4 border-slate-800 pl-3">
+                {businessTitle}
+              </h3>
+              {businessContent.split('\n\n').map((para, i) => (
+                <p key={i} className="text-slate-600 leading-relaxed text-sm whitespace-pre-line">
+                  {para}
+                </p>
+              ))}
             </div>
           </div>
         )}
@@ -173,7 +181,7 @@ export function CompanyInfo() {
                   <p className="text-[11px] text-slate-400">{ceoPosition}</p>
                 </div>
               </div>
-              
+
               {/* Message Text & Signature */}
               <div className="md:col-span-3 space-y-4">
                 {ceoContent.split('\n\n').map((para, i) => (
@@ -181,7 +189,7 @@ export function CompanyInfo() {
                     {para}
                   </p>
                 ))}
-                
+
                 <div className="pt-6 border-t border-slate-100 flex justify-between items-end flex-wrap gap-4 font-serif">
                   <div>
                     <p className="text-xs text-slate-400">{ceoPosition}</p>

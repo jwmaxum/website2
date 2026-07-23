@@ -21,6 +21,8 @@ export function SiteManagement() {
   const [overviewEstYear, setOverviewEstYear] = useState('2020');
   const [overviewEmployees, setOverviewEmployees] = useState('120');
   const [overviewGlobalOffices, setOverviewGlobalOffices] = useState('3');
+  const [overviewBusinessTitle, setOverviewBusinessTitle] = useState('사업영역 (Business)');
+  const [overviewBusinessContent, setOverviewBusinessContent] = useState('조선미녀는 조선 시대 여성들이 피부를 맑고 투명하게 가꾸기 위해 자연에서 얻은 원료를 활용했던 지혜에 영감을 받았습니다. 인삼, 쌀, 벌꿀 등 전통적인 한방 성분을 엄선하고 현대적인 포뮬러 기술을 결합하여 현대 스킨케어 고민을 자극 없이 해결하는 라이프스타일 뷰티 브랜드입니다.\n\n현재 아시아뿐만 아니라 미주, 유럽 등 전 세계 다양한 국가에서 사랑받으며 한국 전통 스킨케어의 아름다움을 글로벌 시장에 널리 알리고 있습니다.');
 
   // Careers
   const [careerStatus, setCareerStatus] = useState('현재 마케팅 및 글로벌 영업 직군 채용이 활발하게 진행 중입니다.');
@@ -102,6 +104,12 @@ export function SiteManagement() {
 
     const savedOverviewGlobalOffices = localStorage.getItem('site_overview_global_offices');
     if (savedOverviewGlobalOffices) setOverviewGlobalOffices(savedOverviewGlobalOffices);
+
+    const savedOverviewBusinessTitle = localStorage.getItem('site_overview_business_title');
+    if (savedOverviewBusinessTitle) setOverviewBusinessTitle(savedOverviewBusinessTitle);
+
+    const savedOverviewBusinessContent = localStorage.getItem('site_overview_business_content');
+    if (savedOverviewBusinessContent) setOverviewBusinessContent(savedOverviewBusinessContent);
 
     const savedCareerStatus = localStorage.getItem('site_career_status');
     if (savedCareerStatus) setCareerStatus(savedCareerStatus);
@@ -202,6 +210,8 @@ export function SiteManagement() {
     localStorage.setItem('site_overview_est_year', overviewEstYear);
     localStorage.setItem('site_overview_employees', overviewEmployees);
     localStorage.setItem('site_overview_global_offices', overviewGlobalOffices);
+    localStorage.setItem('site_overview_business_title', overviewBusinessTitle);
+    localStorage.setItem('site_overview_business_content', overviewBusinessContent);
     localStorage.setItem('site_career_status', careerStatus);
     localStorage.setItem('site_career_positions', careerPositions);
     
@@ -720,6 +730,26 @@ export function SiteManagement() {
                     className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm text-center"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">사업영역 섹션 제목 (Business Section Title)</label>
+                <input
+                  type="text"
+                  value={overviewBusinessTitle}
+                  onChange={(e) => setOverviewBusinessTitle(e.target.value)}
+                  placeholder="사업영역 (Business)"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm font-bold"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">사업영역 상세 내용 (Business Description)</label>
+                <textarea
+                  rows={5}
+                  value={overviewBusinessContent}
+                  onChange={(e) => setOverviewBusinessContent(e.target.value)}
+                  placeholder="사업 영역 및 주요 업무 내용을 입력하세요 (줄바꿈 구분 가능)"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-xs leading-relaxed resize-none"
+                />
               </div>
             </div>
           </div>
