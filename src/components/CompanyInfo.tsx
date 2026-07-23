@@ -87,8 +87,7 @@ export function CompanyInfo() {
     <div className="pt-8 pb-16 max-w-5xl mx-auto animate-in fade-in duration-500">
       {/* Page Title */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-serif text-slate-900 tracking-wide mb-3">Company Info</h1>
-        <p className="text-sm text-slate-500 uppercase tracking-widest font-medium">Beauty of Joseon Story</p>
+        <h1 className="text-4xl font-serif text-slate-900 tracking-wide">Company Info</h1>
       </div>
 
       {/* Tabs Menu */}
