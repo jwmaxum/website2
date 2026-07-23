@@ -3,14 +3,11 @@ import { FAQItem, CustomerInquiry, initialFAQs, initialInquiries } from '../type
 import { sendInquiryReplyEmail } from '../services/emailService';
 
 export function ShopManagement() {
-  const [activeTab, setActiveTab] = useState<'inquiry' | 'faq' | 'settings'>('inquiry');
+  const [activeTab, setActiveTab] = useState<'inquiry' | 'faq'>('inquiry');
 
   // FAQs & Inquiries State
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [inquiries, setInquiries] = useState<CustomerInquiry[]>([]);
-
-  // Shop Settings
-  const [showShoppingMall, setShowShoppingMall] = useState(true);
 
   // FAQ Modal State
   const [showFaqModal, setShowFaqModal] = useState(false);
@@ -24,12 +21,6 @@ export function ShopManagement() {
   const [replyText, setReplyText] = useState('');
 
   useEffect(() => {
-    // Show Shopping Mall
-    const savedMall = localStorage.getItem('show_shopping_mall');
-    if (savedMall !== null) {
-      setShowShoppingMall(JSON.parse(savedMall));
-    }
-
     // FAQs
     const savedFaqs = localStorage.getItem('support_faqs');
     if (savedFaqs) {
@@ -161,11 +152,6 @@ export function ShopManagement() {
     alert(`[답변 등록 완료]\n${emailResult.message}`);
   };
 
-  const handleSaveShopSettings = () => {
-    localStorage.setItem('show_shopping_mall', JSON.stringify(showShoppingMall));
-    alert('쇼핑몰 운영 설정이 성공적으로 저장되었습니다!');
-  };
-
   const pendingInquiriesCount = inquiries.filter((i) => i.status === '접수완료').length;
 
   return (
@@ -175,7 +161,7 @@ export function ShopManagement() {
         <div>
           <h2 className="text-2xl font-bold text-on-surface">쇼핑몰 관리 및 고객지원 (Shopping Mall & Customer Support)</h2>
           <p className="text-sm text-on-surface-variant mt-1">
-            쇼핑몰 운영 권한 직원이 **1:1 고객 온라인 문의 답변**, **자주 묻는 질문(FAQ) 등록**, 및 **쇼핑몰 설정**을 총괄 관리합니다.
+            쇼핑몰 운영 권한 직원이 **1:1 고객 온라인 문의 답변** 및 **자주 묻는 질문(FAQ) 등록**을 관리합니다.
           </p>
         </div>
         {activeTab === 'faq' && (
@@ -212,17 +198,6 @@ export function ShopManagement() {
         >
           <span className="material-symbols-outlined text-[18px]">quiz</span>
           자주 묻는 질문 (FAQ 관리 - {faqs.length}개)
-        </button>
-        <button
-          onClick={() => setActiveTab('settings')}
-          className={`px-5 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
-            activeTab === 'settings'
-              ? 'border-secondary text-secondary'
-              : 'border-transparent text-on-surface-variant hover:text-on-surface'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[18px]">settings</span>
-          쇼핑몰 운영 기본 설정
         </button>
       </div>
 
@@ -354,37 +329,6 @@ export function ShopManagement() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: 쇼핑몰 운영 기본 설정 */}
-      {activeTab === 'settings' && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-6">
-          <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">쇼핑몰 운영 환경 설정</h3>
-          <div className="space-y-4 max-w-xl">
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
-              <div>
-                <span className="text-sm font-bold text-slate-900 block">쇼핑몰 메뉴 공개 여부</span>
-                <span className="text-xs text-slate-500">공개 홈페이지 헤더 및 메인 화면에서 쇼핑몰 메뉴 노출을 제어합니다.</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer shrink-0">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={showShoppingMall}
-                  onChange={(e) => setShowShoppingMall(e.target.checked)}
-                />
-                <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
-              </label>
-            </div>
-
-            <button
-              onClick={handleSaveShopSettings}
-              className="px-6 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-colors shadow-sm"
-            >
-              쇼핑몰 설정 저장하기
-            </button>
           </div>
         </div>
       )}
