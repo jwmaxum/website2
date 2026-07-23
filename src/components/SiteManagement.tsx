@@ -5,8 +5,13 @@ export function SiteManagement() {
   const [showShoppingMall, setShowShoppingMall] = useState(true);
   
   // CEO Message
+  const [ceoName, setCeoName] = useState('구태원 대표이사');
+  const [ceoPosition, setCeoPosition] = useState('주식회사 조선미녀 대표이사 (CEO & Founder)');
+  const [ceoImageUrl, setCeoImageUrl] = useState('');
+  const [ceoSignatureUrl, setCeoSignatureUrl] = useState('');
   const [ceoTitle, setCeoTitle] = useState('자연의 지혜와 정성을 가득 담아 피부 본연의 아름다움을 선물합니다.');
-  const [ceoContent, setCeoContent] = useState('안녕하십니까, 조선미녀(Beauty of Joseon) 대표이사입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
+  const [ceoContent, setCeoContent] = useState('안녕하십니까, 조선미녀(Beauty of Joseon) 대표이사 구태원입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
+  const [ceoSignOff, setCeoSignOff] = useState('조선미녀 대표이사 구태원 드림');
   
   // Company Overview
   const [overviewMission, setOverviewMission] = useState('전통 한방 원료에 현대적 기술을 결합하여 현대인의 피부 고민을 덜어주는 클린 뷰티의 글로벌 스탠다드');
@@ -57,11 +62,26 @@ export function SiteManagement() {
     setEmailFromAddr(emailConfig.fromEmail);
     setEmailFromName(emailConfig.fromName);
 
+    const savedCeoName = localStorage.getItem('site_ceo_name');
+    if (savedCeoName) setCeoName(savedCeoName);
+
+    const savedCeoPosition = localStorage.getItem('site_ceo_position');
+    if (savedCeoPosition) setCeoPosition(savedCeoPosition);
+
+    const savedCeoImg = localStorage.getItem('site_ceo_image_url');
+    if (savedCeoImg) setCeoImageUrl(savedCeoImg);
+
+    const savedCeoSig = localStorage.getItem('site_ceo_signature_url');
+    if (savedCeoSig) setCeoSignatureUrl(savedCeoSig);
+
     const savedCeoTitle = localStorage.getItem('site_ceo_title');
     if (savedCeoTitle) setCeoTitle(savedCeoTitle);
 
     const savedCeoContent = localStorage.getItem('site_ceo_content');
     if (savedCeoContent) setCeoContent(savedCeoContent);
+
+    const savedCeoSignOff = localStorage.getItem('site_ceo_sign_off');
+    if (savedCeoSignOff) setCeoSignOff(savedCeoSignOff);
 
     const savedOverviewMission = localStorage.getItem('site_overview_mission');
     if (savedOverviewMission) setOverviewMission(savedOverviewMission);
@@ -88,7 +108,7 @@ export function SiteManagement() {
     if (savedContactPhone) setContactPhone(savedContactPhone);
 
     const savedContactEmail = localStorage.getItem('site_contact_email');
-    if (savedContactEmail) setEmailFromName(savedContactEmail);
+    if (savedContactEmail) setContactEmail(savedContactEmail);
   }, []);
 
   const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,14 +128,56 @@ export function SiteManagement() {
     reader.readAsDataURL(file);
   };
 
+  const handleCeoImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('대표이사 이미지 크기는 2MB 이하만 등록 가능합니다.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setCeoImageUrl(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCeoSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1 * 1024 * 1024) {
+      alert('서명 이미지 크기는 1MB 이하만 등록 가능합니다.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      setCeoSignatureUrl(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = () => {
     localStorage.setItem('site_brand_name_ko', brandNameKo);
     localStorage.setItem('site_brand_name_en', brandNameEn);
     localStorage.setItem('site_favicon_url', faviconUrl);
 
     localStorage.setItem('show_shopping_mall', JSON.stringify(showShoppingMall));
+    
+    // CEO Message Items
+    localStorage.setItem('site_ceo_name', ceoName);
+    localStorage.setItem('site_ceo_position', ceoPosition);
+    localStorage.setItem('site_ceo_image_url', ceoImageUrl);
+    localStorage.setItem('site_ceo_signature_url', ceoSignatureUrl);
     localStorage.setItem('site_ceo_title', ceoTitle);
     localStorage.setItem('site_ceo_content', ceoContent);
+    localStorage.setItem('site_ceo_sign_off', ceoSignOff);
+
     localStorage.setItem('site_overview_mission', overviewMission);
     localStorage.setItem('site_overview_est_year', overviewEstYear);
     localStorage.setItem('site_overview_employees', overviewEmployees);
@@ -381,27 +443,125 @@ export function SiteManagement() {
         {/* Right Side: Company Info Pages Editing */}
         <div className="lg:col-span-2 space-y-6">
           {/* CEO Message Edit */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">대표이사 인사말 설정</h3>
-            <div className="space-y-4">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant space-y-4">
+            <h3 className="text-lg font-semibold text-on-surface border-b border-slate-100 pb-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px] text-amber-700">person</span>
+              대표이사 인사말 설정 (CEO Message Management)
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">인사말 핵심 헤드라인</label>
+                <label className="block text-xs font-semibold text-on-surface mb-1">대표이사 성명 (CEO Name)</label>
                 <input
                   type="text"
-                  value={ceoTitle}
-                  onChange={(e) => setCeoTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm"
+                  value={ceoName}
+                  onChange={(e) => setCeoName(e.target.value)}
+                  placeholder="구태원 대표이사 또는 이 미 녀"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm font-bold"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-on-surface mb-1">인사말 본문 내용</label>
-                <textarea
-                  rows={6}
-                  value={ceoContent}
-                  onChange={(e) => setCeoContent(e.target.value)}
-                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm resize-none"
+                <label className="block text-xs font-semibold text-on-surface mb-1">대표이사 직함 / 소속 (Position)</label>
+                <input
+                  type="text"
+                  value={ceoPosition}
+                  onChange={(e) => setCeoPosition(e.target.value)}
+                  placeholder="주식회사 조선미녀 대표이사 (CEO & Founder)"
+                  className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs"
                 />
               </div>
+            </div>
+
+            {/* CEO Profile Photo Upload & Signature Image */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+              {/* CEO Profile Image */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-800">대표이사 프로필 사진 등록</label>
+                <input
+                  type="text"
+                  value={ceoImageUrl}
+                  onChange={(e) => setCeoImageUrl(e.target.value)}
+                  placeholder="사진 URL 입력 또는 파일 직접 선택"
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                />
+                <div className="flex items-center gap-3">
+                  <label className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 cursor-pointer flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                    대표이사 사진 파일 업로드 (최대 2MB)
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCeoImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {ceoImageUrl && (
+                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-300 shrink-0">
+                      <img src={ceoImageUrl} alt="CEO Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* CEO Signature / Stamp Image */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-800">대표이사 서명 / 인장 이미지 등록 (선택)</label>
+                <input
+                  type="text"
+                  value={ceoSignatureUrl}
+                  onChange={(e) => setCeoSignatureUrl(e.target.value)}
+                  placeholder="서명 이미지 URL 또는 파일 선택"
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs"
+                />
+                <div className="flex items-center gap-3">
+                  <label className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 cursor-pointer flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">draw</span>
+                    서명 이미지 파일 업로드 (최대 1MB)
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCeoSignatureUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {ceoSignatureUrl && (
+                    <div className="h-8 p-1 bg-white rounded border border-slate-200 shrink-0">
+                      <img src={ceoSignatureUrl} alt="Signature Preview" className="h-full object-contain" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">인사말 핵심 헤드라인 (Greeting Title)</label>
+              <input
+                type="text"
+                value={ceoTitle}
+                onChange={(e) => setCeoTitle(e.target.value)}
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-sm font-bold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">인사말 본문 내용 (Message Content)</label>
+              <textarea
+                rows={6}
+                value={ceoContent}
+                onChange={(e) => setCeoContent(e.target.value)}
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-secondary text-xs leading-relaxed resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-on-surface mb-1">하단 서명 마무리 문구 (Sign-off Text)</label>
+              <input
+                type="text"
+                value={ceoSignOff}
+                onChange={(e) => setCeoSignOff(e.target.value)}
+                placeholder="조선미녀 대표이사 구태원 드림"
+                className="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-xs font-bold"
+              />
             </div>
           </div>
 

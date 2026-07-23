@@ -6,27 +6,35 @@ export function CompanyInfo() {
   const activeTab = searchParams.get('tab') || 'overview';
 
   // Configurable states loaded from localStorage
+  const [ceoName, setCeoName] = useState('구태원 대표이사');
+  const [ceoPosition, setCeoPosition] = useState('주식회사 조선미녀 대표이사 (CEO & Founder)');
+  const [ceoImageUrl, setCeoImageUrl] = useState('');
+  const [ceoSignatureUrl, setCeoSignatureUrl] = useState('');
   const [ceoTitle, setCeoTitle] = useState('자연의 지혜와 정성을 가득 담아 피부 본연의 아름다움을 선물합니다.');
-  const [ceoContent, setCeoContent] = useState('안녕하십니까, 조선미녀(Beauty of Joseon) 대표이사입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
-  
-  const [overviewMission, setOverviewMission] = useState('전통 한방 원료에 현대적 기술을 결합하여 현대인의 피부 고민을 덜어주는 클린 뷰티의 글로벌 스탠다드');
-  const [overviewEstYear, setOverviewEstYear] = useState('2020');
-  const [overviewEmployees, setOverviewEmployees] = useState('120');
-  const [overviewGlobalOffices, setOverviewGlobalOffices] = useState('3');
-
-  const [careerStatus, setCareerStatus] = useState('현재 마케팅 및 글로벌 영업 직군 채용이 활발하게 진행 중입니다.');
-  const [careerPositions, setCareerPositions] = useState('• [신입/경력] 글로벌 브랜드 마케터 (영어가능자 필수)\n• [경력] 국내/해외 화장품 상품 기획자 (BM)\n• [신입/경력] 자사몰 퍼포먼스 마케팅 담당자');
-
-  const [contactAddress, setContactAddress] = useState('서울특별시 종로구 율곡로 10길 (운니동, 한방빌딩 4층)');
-  const [contactPhone, setContactPhone] = useState('02-1234-5678');
-  const [contactEmail, setContactEmail] = useState('support@beautyofjoseon.com');
+  const [ceoContent, setCeoContent] = useState('안녕하십니까, 조선미녀(Beauty of Joseon) 대표이사 구태원입니다.\n\n저희 브랜드는 한방 화장품의 고루한 이미지를 탈피하여 현대인들이 부담 없이 스킨케어를 즐길 수 있도록 전통과 현대의 조화를 탐구해 왔습니다.\n\n조선 시대 여성들의 단아하고 기품 있는 피부 관리 방식을 현대적인 처방으로 재해석하여, 맑고 투명한 피부 본연의 힘을 되찾아 드리는 것이 저희의 사명입니다.\n\n언제나 좋은 원료와 정직한 제조를 바탕으로 고객 여러분의 신뢰에 보답하겠습니다. 늘 함께해 주셔서 감사합니다.');
+  const [ceoSignOff, setCeoSignOff] = useState('조선미녀 대표이사 구태원 드림');
 
   useEffect(() => {
+    const savedCeoName = localStorage.getItem('site_ceo_name');
+    if (savedCeoName) setCeoName(savedCeoName);
+
+    const savedCeoPosition = localStorage.getItem('site_ceo_position');
+    if (savedCeoPosition) setCeoPosition(savedCeoPosition);
+
+    const savedCeoImg = localStorage.getItem('site_ceo_image_url');
+    if (savedCeoImg) setCeoImageUrl(savedCeoImg);
+
+    const savedCeoSig = localStorage.getItem('site_ceo_signature_url');
+    if (savedCeoSig) setCeoSignatureUrl(savedCeoSig);
+
     const savedCeoTitle = localStorage.getItem('site_ceo_title');
     if (savedCeoTitle) setCeoTitle(savedCeoTitle);
 
     const savedCeoContent = localStorage.getItem('site_ceo_content');
     if (savedCeoContent) setCeoContent(savedCeoContent);
+
+    const savedCeoSignOff = localStorage.getItem('site_ceo_sign_off');
+    if (savedCeoSignOff) setCeoSignOff(savedCeoSignOff);
 
     const savedOverviewMission = localStorage.getItem('site_overview_mission');
     if (savedOverviewMission) setOverviewMission(savedOverviewMission);
@@ -132,19 +140,30 @@ export function CompanyInfo() {
           <div className="space-y-8 animate-in fade-in duration-300">
             {/* CEO Title */}
             <h2 className="text-xl md:text-2xl font-serif text-slate-900 leading-relaxed border-b border-slate-100 pb-6">
-              {ceoTitle}
+              "{ceoTitle}"
             </h2>
 
-            {/* CEO Content */}
+            {/* CEO Profile Photo & Content */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
-              {/* Photo Placeholders */}
-              <div className="md:col-span-1 flex justify-center">
-                <div className="w-32 h-32 md:w-full aspect-square bg-[#fbf9f6] border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 font-serif">
-                  CEO Photo
+              {/* Profile Photo */}
+              <div className="md:col-span-1 flex flex-col items-center">
+                {ceoImageUrl ? (
+                  <div className="w-36 h-48 md:w-full md:h-60 rounded-2xl overflow-hidden shadow-md border border-slate-200">
+                    <img src={ceoImageUrl} alt={ceoName} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-36 h-36 md:w-full aspect-square bg-[#fbf9f6] border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                    <span className="material-symbols-outlined text-[48px] text-slate-300 mb-1">person</span>
+                    <span className="text-xs font-bold text-slate-500">{ceoName}</span>
+                  </div>
+                )}
+                <div className="mt-3 text-center">
+                  <p className="text-xs font-bold text-slate-900">{ceoName}</p>
+                  <p className="text-[11px] text-slate-400">{ceoPosition}</p>
                 </div>
               </div>
               
-              {/* Message text */}
+              {/* Message Text & Signature */}
               <div className="md:col-span-3 space-y-4">
                 {ceoContent.split('\n\n').map((para, i) => (
                   <p key={i} className="text-slate-600 leading-relaxed text-sm whitespace-pre-line">
@@ -152,9 +171,21 @@ export function CompanyInfo() {
                   </p>
                 ))}
                 
-                <div className="pt-6 text-right font-serif">
-                  <p className="text-xs text-slate-400">조선미녀 대표이사</p>
-                  <p className="text-lg font-semibold text-slate-900 mt-1">이 미 녀 (Lee Mi Nyeo) <span className="text-slate-300 font-normal italic font-sans">(인)</span></p>
+                <div className="pt-6 border-t border-slate-100 flex justify-between items-end flex-wrap gap-4 font-serif">
+                  <div>
+                    <p className="text-xs text-slate-400">{ceoPosition}</p>
+                    <p className="text-base font-bold text-slate-900 mt-0.5">{ceoName}</p>
+                  </div>
+
+                  {ceoSignatureUrl ? (
+                    <div className="h-12 flex items-center">
+                      <img src={ceoSignatureUrl} alt="Signature" className="h-full object-contain" />
+                    </div>
+                  ) : (
+                    <p className="text-sm font-semibold text-slate-900 italic font-sans">
+                      {ceoSignOff || `${ceoName} 드림`}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
