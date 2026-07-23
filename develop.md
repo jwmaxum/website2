@@ -806,5 +806,116 @@ Phase 5: 테스트 및 배포 (Testing & Deployment)
 •배포: 개발된 웹사이트를 운영 환경에 배포하고 지속적인 모니터링 시스템 구축.
 5. 결론
 본 개발 계획서는 '미인정선(Beauty of Joseon)' 웹사이트를 참고하고, 제공된 default_site1 개발문서.pdf의 상세한 CMS 기능을 바탕으로 'Shop'과 'Company'를 좌측 메뉴로 하는 웹사이트를 구축하기 위한 체계적인 로드맵을 제시합니다. 각 단계별 목표와 기술 스택을 명확히 하여, 사용자께서 원하시는 고품질의 웹사이트를 성공적으로 개발할 수 있도록 최선을 다하겠습니다.
-다음 단계로, 이 개발 계획서에 대한 사용자님의 피드백을 기다리며, 필요시 상세한 기능 정의 및 디자인 가이드라인을 수립할 예정입니다.
 
+---
+
+# 6. 최종 완료 기능 및 아키텍처 명세서 (Final Implementation & Architecture)
+
+본 절은 사용자 요구사항 및 개발 가이드라인을 100% 반영하여 구축이 완료된 전체 시스템의 최종 기능, 아키텍처, 데이터베이스 스키마 및 보안 권한 정책을 상세히 기록합니다.
+
+---
+
+## 6.1. 쇼핑몰 & 자사몰 주요 구현 기능 (Front-end & Shopping Mall)
+
+### 1) 토스페이먼츠(Toss Payments) 결제 연동 및 13대 DB 필드 수집
+- **메인 결제 PG**: 토스페이먼츠(Toss Payments) 결제창 SDK 연동 완료.
+- **결제수단 지원**: 신용/체크카드, 계좌이체, 가상계좌, 간편결제(토스페이, 카카오페이, 네이버페이 등).
+- **Supabase DB (`public.payments` 테이블) 필수 13대 필드 자동 수집 및 저장**:
+  1. `id` (UUID Primary Key)
+  2. `order_id` (주문 식별자: e.g., `ORD-20260723-XXXX`)
+  3. `user_id` (고객 ID/이메일)
+  4. `pg` (`TOSSPAYMENTS`)
+  5. `payment_key` (토스 고유 결제키)
+  6. `transaction_id` (거래 식별자)
+  7. `amount` (총 결제 금액)
+  8. `vat` (부가세 10% 자동 계산)
+  9. `status` (`DONE`, `CANCELLED`, `REFUNDED`)
+  10. `method` (카드, 계좌이체 등)
+  11. `approved_at` (승인 일시 TIMESTAMPTZ)
+  12. `cancelled_at` (취소 일시 TIMESTAMPTZ)
+  13. `refunded_amount` (환불 금액)
+
+### 2) 고객 ID 배송지 수집 & 향후 재주문 자동 불러오기 (Address Mapping)
+- **Supabase DB (`public.customer_addresses` 테이블) 및 로컬 DB 맵핑**:
+  - 주문서 결제 시 입력받은 배송지 주소, 수령인 성명, 연락처를 고객 ID(이메일)와 자동 맵핑하여 DB에 저장합니다.
+- **재주문 자동 채우기 (Auto-fill)**:
+  - 재방문 고객이 로그인하거나 주문서에서 이메일을 입력 시 맵핑된 기본 배송지가 자동 불러와집니다.
+- **마이페이지 배송지 관리**:
+  - `/mypage` 회원 정보 관리 메뉴에서 고객 ID에 연동된 기본 배송지 주소를 확인하실 수 있습니다.
+
+### 3) 국내 3대 택배사 (CJ대한통운, 로젠택배, 한진택배) API 실시간 배송 추적
+- **실시간 API 연동 서비스 (`courierTrackingService.ts`)**:
+  - `CJ대한통운` (코드 `04`), `로젠택배` (코드 `06`), `한진택배` (코드 `05`) 실시간 이동 경로 API 지원.
+- **통합 배송 추적 모달 (`CourierTrackingModal.tsx`)**:
+  - `집화완료` ➔ `Hub 이동중` ➔ `배송출발 (담당기사 연락처)` ➔ `배송완료` 4단계 실시간 타임라인 시각화.
+- **관리자 & 회원/비회원 공용 조회**:
+  - 관리자 주문 관리 대시보드(`/admin/orders`) 및 고객 마이페이지(`/mypage`) 모두에서 실시간 조회 가능.
+
+### 4) 하이엔드 럭셔리 브랜드 스토리 페이지 (`/brand`) & 관리자 수정 기능
+- **디자인 레이아웃**: Aesop, Sulwhasoo, Dior Beauty 스타일의 비디오 배경 풀스크린 럭셔리 디자인.
+- **동영상 첨부**: MP4/WebM 직접 파일 업로드 및 외부 미디어 링크 재생 지원.
+- **관리자 편집 (`/admin/content`)**: 브랜드 스토리, 미디어 갤러리, 무드 필름 라이트박스 전체 수정 가능.
+
+### 5) 대표이사 인사말 및 회사 정보 관리 (`/company?tab=ceo`)
+- **실시간 수정**: 대표이사 이미지 첨부(최대 2MB), 서명 이미지(최대 1MB), 성명(`구태원`), 직함, 인사말 본문 및 서명 문구 관리자 변경 가능.
+
+---
+
+## 6.2. 관리자 콘솔 및 보안 권한 정책 (Admin Console & Role Isolation)
+
+### 1) 메뉴 구조 개편 및 운영 권한 분리
+- **쇼핑몰 관리 (`/admin/shop`)**:
+  - 기존 콘텐츠 관리 항목 중 `자주 묻는 질문(FAQ) 등록` 및 `1:1 고객문의 답변 관리`를 쇼핑몰 운영 직원이 관리하도록 쇼핑몰 관리 메뉴로 이전.
+- **권한 등록 메뉴 변경 (`/admin/site` - 권한 관리)**:
+  - `쇼핑몰 운영 기본 설정` (쇼핑몰 ON/OFF) 기능은 **최고관리자 `siteadmin` 전용 권한**으로 지정.
+  - 일반 직원이 로그인 시 `권한등록`/`사이트 관리` 메뉴가 숨김 처리되며, 백엔드 API/라우트 레벨에서 접근 차단.
+
+### 2) SEO 검색엔진 최적화 관리 콘솔 (`/admin/site` ➔ SEO 관리)
+- **기본 메타 태그**: `Meta Title`, `Meta Description`, `Meta Keywords`, `Author`, `Canonical URL` 설정.
+- **Open Graph (소셜 미디어 공유)**: `og:title`, `og:description`, `og:image` (최대 2MB 이미지 직접 업로드).
+- **검색엔진 인증 및 크롤러**: Google Site Verification, Naver Site Verification 키 등록 및 `robots.txt` 색인 지침 설정.
+- **구조화된 데이터**: Google 검색용 JSON-LD Schema.org 자동 생성 및 전역 헤더(`document.head`) 실시간 주입.
+
+---
+
+## 6.3. 데이터베이스 스키마 명세 (Supabase SQL Schema)
+
+```sql
+-- 1. Payments Table (토스페이먼츠 13대 필드)
+CREATE TABLE IF NOT EXISTS public.payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    pg TEXT DEFAULT 'TOSSPAYMENTS',
+    payment_key TEXT UNIQUE NOT NULL,
+    transaction_id TEXT,
+    amount NUMERIC NOT NULL,
+    vat NUMERIC DEFAULT 0,
+    status TEXT NOT NULL,
+    method TEXT,
+    approved_at TIMESTAMPTZ,
+    cancelled_at TIMESTAMPTZ,
+    refunded_amount NUMERIC DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Customer Addresses Table (고객 ID 배송지 맵핑 DB)
+CREATE TABLE IF NOT EXISTS public.customer_addresses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL,
+    recipient_name TEXT NOT NULL,
+    phone TEXT,
+    address TEXT NOT NULL,
+    is_default BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+---
+
+## 6.4. 코드 검증 및 품질 상태
+- **Vite Production Build**: `npm run build` 검증 완료 (0 Error, 0 Warning).
+- **Node.js**: Node.js `v24` 및 React 18 / TypeScript 환경 동작 검증 완료.
+- **GitHub 배포**: `https://github.com/jwmaxum/website2.git` 원격 저장소 푸시 및 Cloudflare Pages 배포 완료.
