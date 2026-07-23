@@ -35,6 +35,13 @@ export function OrderManagement() {
     localStorage.setItem('shop_orders', JSON.stringify(updated));
   };
 
+  const handleClearAllOrders = () => {
+    if (confirm('모든 주문 및 물류 더미 내역을 삭제하시겠습니까? (이 작업은 되돌릴 수 없습니다.)')) {
+      saveOrders([]);
+      alert('모든 주문 내역이 성공적으로 초기화/삭제되었습니다.');
+    }
+  };
+
   const handleStartEditCourier = (ord: Order) => {
     setEditingOrderId(ord.id);
     setSelectedCourier(ord.courier || 'CJ대한통운');
@@ -96,11 +103,20 @@ export function OrderManagement() {
             회원 및 비회원 신규 주문을 확인하고, **택배사(CJ대한통운, 로젠, 한진)** 지정 및 송장번호를 등록합니다.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]">local_shipping</span>
             총 {orders.length}건 주문
           </span>
+          {orders.length > 0 && (
+            <button
+              onClick={handleClearAllOrders}
+              className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-colors flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-[14px]">delete</span>
+              주문 내역 전체 삭제
+            </button>
+          )}
         </div>
       </div>
 
