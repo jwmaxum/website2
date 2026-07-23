@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { applySEOTagsToHead } from './services/seoService';
 import { LoginPage } from './components/LoginPage';
 import { AdminLayout } from './components/AdminLayout';
 import { Dashboard } from './components/Dashboard';
@@ -18,6 +20,9 @@ import { ShopManagement } from './components/ShopManagement';
 import { BrandStory } from './components/BrandStory';
 
 export default function App() {
+  useEffect(() => {
+    applySEOTagsToHead();
+  }, []);
   return (
     <BrowserRouter>
       <Routes>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getEmailSettings, sendInquiryReplyEmail, EmailSettings } from '../services/emailService';
+import { SEOManagement } from './SEOManagement';
 
 export function SiteManagement() {
+  const [activeTab, setActiveTab] = useState<'site' | 'seo'>('site');
   const [showShoppingMall, setShowShoppingMall] = useState(true);
   
   // CEO Message
@@ -271,18 +273,51 @@ export function SiteManagement() {
       {/* Header */}
       <div className="flex justify-between items-end border-b border-outline-variant pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">사이트 관리 (Site Management)</h2>
-          <p className="text-sm text-on-surface-variant mt-1">공개 웹사이트의 메뉴 노출 및 회사 정보 페이지 내용을 설정합니다.</p>
+          <h2 className="text-2xl font-bold text-on-surface">사이트 및 SEO 관리 (Site & SEO Management)</h2>
+          <p className="text-sm text-on-surface-variant mt-1">
+            공개 웹사이트의 회사정보, 파비콘, 이메일 연동 및 **SEO 검색엔진 최적화(Meta Title/OG/Robots)**를 관리합니다.
+          </p>
         </div>
+        {activeTab === 'site' && (
+          <button
+            onClick={handleSave}
+            className="px-6 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm"
+          >
+            사이트 설정 저장하기
+          </button>
+        )}
+      </div>
+
+      {/* Main Mode Tabs */}
+      <div className="flex space-x-1 border-b border-slate-200">
         <button
-          onClick={handleSave}
-          className="px-6 py-2.5 bg-secondary text-white rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors shadow-sm"
+          onClick={() => setActiveTab('site')}
+          className={`px-5 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === 'site'
+              ? 'border-secondary text-secondary'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
+          }`}
         >
-          설정 저장하기
+          <span className="material-symbols-outlined text-[18px]">domain</span>
+          🏛️ 회사정보 & 브랜드 기본 설정
+        </button>
+        <button
+          onClick={() => setActiveTab('seo')}
+          className={`px-5 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === 'seo'
+              ? 'border-secondary text-secondary'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">search</span>
+          🔍 SEO 검색엔진 최적화 & 소셜 메타태그 관리
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {activeTab === 'seo' ? (
+        <SEOManagement />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Side: Brand Name, Favicon & Contact Us & Resend Email Settings */}
         <div className="lg:col-span-1 space-y-6">
           {/* Brand Name & Favicon */}
@@ -714,6 +749,7 @@ export function SiteManagement() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
