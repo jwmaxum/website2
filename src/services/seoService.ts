@@ -1,15 +1,28 @@
 import { SEOSettings, defaultSEOSettings } from '../types/SEOTypes';
 
 export function getSEOSettings(): SEOSettings {
+  const savedBrandKo = localStorage.getItem('site_brand_name_ko') || '공식 자사몰';
+  const savedBrandEn = localStorage.getItem('site_brand_name_en') || 'OFFICIAL STORE';
+
+  const dynamicDefault: SEOSettings = {
+    ...defaultSEOSettings,
+    metaTitle: `${savedBrandKo} (${savedBrandEn}) | 공식 스킨케어 온라인몰`,
+    ogTitle: `${savedBrandKo} (${savedBrandEn}) | 맑은 피부의 시작`,
+    author: `주식회사 ${savedBrandKo}`,
+  };
+
   const saved = localStorage.getItem('site_seo_settings');
   if (saved) {
     try {
-      return JSON.parse(saved);
+      return {
+        ...dynamicDefault,
+        ...JSON.parse(saved),
+      };
     } catch (e) {
-      return defaultSEOSettings;
+      return dynamicDefault;
     }
   }
-  return defaultSEOSettings;
+  return dynamicDefault;
 }
 
 export function saveSEOSettings(settings: SEOSettings): void {
@@ -22,6 +35,10 @@ export function saveSEOSettings(settings: SEOSettings): void {
  */
 export function applySEOTagsToHead(settings: SEOSettings = getSEOSettings()): void {
   if (typeof document === 'undefined') return;
+
+  const savedBrandKo = localStorage.getItem('site_brand_name_ko') || '공식 자사몰';
+  const savedBrandEn = localStorage.getItem('site_brand_name_en') || 'OFFICIAL STORE';
+  const siteFullName = `${savedBrandKo} (${savedBrandEn})`;
 
   // 1. Page Title
   if (settings.metaTitle) {
@@ -41,10 +58,11 @@ export function applySEOTagsToHead(settings: SEOSettings = getSEOSettings()): vo
   // 2. Core Meta Tags
   setMetaTag('meta[name="description"]', 'name', 'description', settings.metaDescription);
   setMetaTag('meta[name="keywords"]', 'name', 'keywords', settings.metaKeywords);
-  setMetaTag('meta[name="author"]', 'name', 'author', settings.author);
+  setMetaTag('meta[name="author"]', 'name', 'author', settings.author || `주식회사 ${savedBrandKo}`);
   setMetaTag('meta[name="robots"]', 'name', 'robots', settings.robotsIndex);
 
-  // 3. Open Graph Tags
+  // 3. Open Graph Tags (KakaoTalk / Naver / SNS Link Preview)
+  setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', siteFullName);
   setMetaTag('meta[property="og:title"]', 'property', 'og:title', settings.ogTitle || settings.metaTitle);
   setMetaTag('meta[property="og:description"]', 'property', 'og:description', settings.ogDescription || settings.metaDescription);
   setMetaTag('meta[property="og:image"]', 'property', 'og:image', settings.ogImageUrl);

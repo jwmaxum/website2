@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getEmailSettings, sendInquiryReplyEmail, EmailSettings } from '../services/emailService';
+import { applySEOTagsToHead } from '../services/seoService';
 import { SEOManagement } from './SEOManagement';
 
 export function SiteManagement() {
@@ -224,8 +225,8 @@ export function SiteManagement() {
       link.href = faviconUrl;
     }
 
-    // Dynamic Document Title Update
-    document.title = `${brandNameKo} | ${brandNameEn}`;
+    // Dynamic Document Title & Head Meta Tags Update
+    applySEOTagsToHead();
 
     // Save Email Settings
     const emailConfig: EmailSettings = {
