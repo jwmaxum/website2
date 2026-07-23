@@ -36,6 +36,11 @@ export function CustomerMyPage() {
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [activeTrackingOrder, setActiveTrackingOrder] = useState<Order | null>(null);
 
+  // Configurable Company / Brand Info loaded from Admin Site Management
+  const [brandNameKo, setBrandNameKo] = useState('조선미녀');
+  const [brandNameEn, setBrandNameEn] = useState('BEAUTY OF JOSEON');
+  const [faviconUrl, setFaviconUrl] = useState('');
+
   // Login Form
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -75,6 +80,15 @@ export function CustomerMyPage() {
         // default
       }
     }
+
+    const savedKo = localStorage.getItem('site_brand_name_ko');
+    if (savedKo) setBrandNameKo(savedKo);
+
+    const savedEn = localStorage.getItem('site_brand_name_en');
+    if (savedEn) setBrandNameEn(savedEn);
+
+    const savedFav = localStorage.getItem('site_favicon_url');
+    if (savedFav) setFaviconUrl(savedFav);
   }, []);
 
   const handleLoginSubmit = (e: FormEvent) => {
@@ -186,9 +200,17 @@ export function CustomerMyPage() {
       {!isLoggedIn ? (
         <div className="max-w-md mx-auto bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-200">
           {/* Logo Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-serif tracking-widest text-slate-900 mb-2">BEAUTY OF JOSEON</h1>
-            <p className="text-xs text-slate-500">고객 전용 쇼핑몰 회원 & 비회원 배송조회 서비스</p>
+          <div className="text-center mb-8 flex flex-col items-center">
+            {faviconUrl && (
+              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 p-1 mb-3 overflow-hidden shadow-xs flex items-center justify-center">
+                <img src={faviconUrl} alt={brandNameKo} className="w-full h-full object-contain" />
+              </div>
+            )}
+            <h1 className="text-2xl font-serif font-bold tracking-widest text-slate-900 mb-1 uppercase">
+              {brandNameEn}
+            </h1>
+            <p className="text-xs font-bold text-slate-500 mb-1">{brandNameKo}</p>
+            <p className="text-xs text-slate-400">고객 전용 쇼핑몰 회원 & 비회원 배송조회 서비스</p>
           </div>
 
           {/* Toggle Tabs */}

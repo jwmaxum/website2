@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/Input';
 import { StaffUser, initialStaffUsers } from './UserManagement';
@@ -17,6 +17,22 @@ export function LoginPage() {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Configurable Company / Brand Info loaded from Admin Site Management
+  const [brandNameKo, setBrandNameKo] = useState('조선미녀');
+  const [brandNameEn, setBrandNameEn] = useState('BEAUTY OF JOSEON');
+  const [faviconUrl, setFaviconUrl] = useState('');
+
+  useEffect(() => {
+    const savedKo = localStorage.getItem('site_brand_name_ko');
+    if (savedKo) setBrandNameKo(savedKo);
+
+    const savedEn = localStorage.getItem('site_brand_name_en');
+    if (savedEn) setBrandNameEn(savedEn);
+
+    const savedFav = localStorage.getItem('site_favicon_url');
+    if (savedFav) setFaviconUrl(savedFav);
+  }, []);
 
   // Password reset modal state
   const [showResetModal, setShowResetModal] = useState(false);
@@ -149,16 +165,18 @@ export function LoginPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-outline-variant overflow-hidden flex flex-col">
           
           {/* Card Header / Brand */}
-          <div className="p-6 pb-4 flex flex-col items-center justify-center border-b border-surface-container border-opacity-50">
-            <div className="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center mb-4 shadow-sm ring-1 ring-outline-variant/30 overflow-hidden">
+          <div className="p-6 pb-4 flex flex-col items-center justify-center border-b border-surface-container border-opacity-50 text-center">
+            <div className="w-16 h-16 rounded-xl bg-surface-container flex items-center justify-center mb-3 shadow-sm ring-1 ring-outline-variant/30 overflow-hidden p-1">
               <img 
-                className="w-full h-full object-cover" 
-                alt="Company Logo" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzdKFsdPnKcTZgizNUKNAQm4C7c0rxBrNMlB3K5hpuP-ZtI39somkJYvZ44418CAGbL_oNOOYdt8XvN0xntUda3uvRiJ7ClsESuUvSTvxQunbLKo_chpYgvscwiltagl-nk3eNRXa02lkJl6B4_pZWgWYXcljNDFz49O07dhycfXCfTqEtc38vlmTd0bJKETS9M_mviIM6bAh3DgLQkcfOqeoWpGwIjzFuMVamK28DEASUmEFHTskKTA" 
+                className="w-full h-full object-contain" 
+                alt={brandNameKo} 
+                src={faviconUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuCzdKFsdPnKcTZgizNUKNAQm4C7c0rxBrNMlB3K5hpuP-ZtI39somkJYvZ44418CAGbL_oNOOYdt8XvN0xntUda3uvRiJ7ClsESuUvSTvxQunbLKo_chpYgvscwiltagl-nk3eNRXa02lkJl6B4_pZWgWYXcljNDFz49O07dhycfXCfTqEtc38vlmTd0bJKETS9M_mviIM6bAh3DgLQkcfOqeoWpGwIjzFuMVamK28DEASUmEFHTskKTA"} 
               />
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight text-primary text-center">Console CMS</h1>
-            <p className="text-sm font-normal text-on-surface-variant text-center mt-1">Secure Back-office Access</p>
+            <h1 className="text-xl font-serif font-bold tracking-wider text-slate-900 uppercase">
+              {brandNameEn}
+            </h1>
+            <p className="text-xs font-bold text-slate-500 mt-0.5">{brandNameKo} 통합 관리자 콘솔 (Console CMS)</p>
           </div>
 
           {/* Form Body */}
