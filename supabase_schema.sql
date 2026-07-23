@@ -269,6 +269,44 @@ CREATE POLICY "Staff manage payments"
     FOR ALL
     USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
 
+-- --------------------------------------------------------------------
+-- 9. Customer Addresses Table (고객 배송지 정보 수집 및 맵핑 DB)
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.customer_addresses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT NOT NULL, -- Mapped to Customer Email or Customer User ID
+    recipient_name TEXT NOT NULL,
+    phone TEXT,
+    address TEXT NOT NULL,
+    is_default BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.customer_addresses ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public insert customer address" ON public.customer_addresses;
+DROP POLICY IF EXISTS "Customers view own address" ON public.customer_addresses;
+DROP POLICY IF EXISTS "Staff manage customer addresses" ON public.customer_addresses;
+
+-- Customers / Public can insert address on order placement
+CREATE POLICY "Public insert customer address"
+    ON public.customer_addresses
+    FOR INSERT
+    WITH CHECK (true);
+
+-- Customers can view/update their mapped shipping addresses
+CREATE POLICY "Customers view own address"
+    ON public.customer_addresses
+    FOR ALL
+    USING (user_id = auth.uid()::text OR user_id = current_setting('request.jwt.claims', true)::json ->> 'sub');
+
+-- Staff manage customer addresses
+CREATE POLICY "Staff manage customer addresses"
+    ON public.customer_addresses
+    FOR ALL
+    USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
+
 -- ====================================================================
 -- End of Schema
 -- ====================================================================

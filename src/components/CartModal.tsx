@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartItem, Order, OrderItem, initialOrders } from '../types/OrderTypes';
 import { getTossPaymentsConfig, savePaymentRecord, TossPaymentRecord } from '../lib/tossPayments';
+import { saveCustomerAddress, getCustomerSavedAddress } from '../lib/customerAddresses';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -43,6 +44,14 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
           setGuestName(user.name.replace(' 님', ''));
           setGuestEmail(user.email);
           setGuestPhone(user.phone || '');
+
+          // Retrieve saved shipping address mapped to customer ID (email)
+          const savedAddr = getCustomerSavedAddress(user.email);
+          if (savedAddr && savedAddr.address) {
+            setGuestAddress(savedAddr.address);
+            if (savedAddr.recipient_name) setGuestName(savedAddr.recipient_name);
+            if (savedAddr.phone) setGuestPhone(savedAddr.phone);
+          }
         } catch (e) {
           setOrderType('guest');
         }
@@ -51,6 +60,18 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
       }
     }
   }, [isOpen]);
+
+  // Handle pre-filling address when guest inputs an email used in prior orders
+  const handleEmailBlur = () => {
+    if (guestEmail.trim()) {
+      const savedAddr = getCustomerSavedAddress(guestEmail.trim());
+      if (savedAddr && savedAddr.address) {
+        setGuestAddress(savedAddr.address);
+        if (savedAddr.recipient_name && !guestName) setGuestName(savedAddr.recipient_name);
+        if (savedAddr.phone && !guestPhone) setGuestPhone(savedAddr.phone);
+      }
+    }
+  };
 
   const saveCart = (items: CartItem[]) => {
     setCartItems(items);
@@ -146,6 +167,15 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
 
     // Save Payment Transaction to Supabase DB 'payments' table (13 fields)
     await savePaymentRecord(paymentRecord);
+
+    // Save & Map Customer Shipping Address to Customer ID (email) for Future Orders
+    await saveCustomerAddress({
+      user_id: guestEmail.trim(),
+      recipient_name: guestName.trim(),
+      phone: guestPhone.trim() || '010-0000-0000',
+      address: guestAddress.trim(),
+      is_default: true,
+    });
 
     // Save order to localStorage
     const savedOrders = localStorage.getItem('shop_orders');
@@ -298,6 +328,7 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
                   type="email"
                   value={guestEmail}
                   onChange={(e) => setGuestEmail(e.target.value)}
+                  onBlur={handleEmailBlur}
                   placeholder="order_guest@example.com"
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-900"
                   required

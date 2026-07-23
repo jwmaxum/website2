@@ -1,6 +1,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Order, CourierCompany, initialOrders } from '../types/OrderTypes';
+import { getCustomerSavedAddress } from '../lib/customerAddresses';
 
 export interface CustomerUser {
   id: string;
@@ -562,18 +563,21 @@ export function CustomerMyPage() {
             </div>
           )}
 
-          {/* My Page Content - Settings */}
+          {/* My Page Content - Settings & Saved Address */}
           {myPageSection === 'settings' && (
             <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-              <h3 className="text-lg font-bold text-slate-900">회원 정보 확인 및 관리</h3>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-amber-700">manage_accounts</span>
+                회원 정보 및 기본 배송지 관리
+              </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <label className="text-xs font-bold text-slate-400 block mb-1">성명</label>
                   <div className="p-3 bg-slate-50 rounded-xl font-bold text-slate-800">{currentUser?.name}</div>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-400 block mb-1">이메일 주소</label>
-                  <div className="p-3 bg-slate-50 rounded-xl font-bold text-slate-800">{currentUser?.email}</div>
+                  <label className="text-xs font-bold text-slate-400 block mb-1">이메일 주소 (고객 ID)</label>
+                  <div className="p-3 bg-slate-50 rounded-xl font-bold text-slate-800 font-mono">{currentUser?.email}</div>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-400 block mb-1">연락처</label>
@@ -582,6 +586,28 @@ export function CustomerMyPage() {
                 <div>
                   <label className="text-xs font-bold text-slate-400 block mb-1">회원 등급</label>
                   <div className="p-3 bg-slate-50 rounded-xl font-bold text-amber-800">{currentUser?.membership}</div>
+                </div>
+              </div>
+
+              {/* Saved Mapped Shipping Address */}
+              <div className="p-5 bg-amber-50/60 rounded-2xl border border-amber-200/80 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[18px] text-amber-700">location_on</span>
+                    주문 후 자동 저장 및 맵핑된 기본 배송지
+                  </span>
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-200 text-amber-900 rounded">
+                    자동 연동 완료
+                  </span>
+                </div>
+
+                <div className="bg-white p-4 rounded-xl border border-amber-200 text-xs space-y-1.5">
+                  <p className="font-bold text-slate-900">
+                    수령인: {getCustomerSavedAddress(currentUser?.email || '')?.recipient_name || currentUser?.name} ({getCustomerSavedAddress(currentUser?.email || '')?.phone || currentUser?.phone})
+                  </p>
+                  <p className="text-slate-700 leading-relaxed font-semibold">
+                    {getCustomerSavedAddress(currentUser?.email || '')?.address || '아직 저장된 배송지가 없습니다. 첫 주문 시 배송지가 고객 ID와 자동 맵핑되어 저장됩니다.'}
+                  </p>
                 </div>
               </div>
 
