@@ -19,6 +19,8 @@ import { CustomerSupport } from './components/CustomerSupport';
 import { ShopManagement } from './components/ShopManagement';
 import { BrandStory } from './components/BrandStory';
 
+import { CustomerManagement } from './components/CustomerManagement';
+
 export default function App() {
   useEffect(() => {
     applySEOTagsToHead();
@@ -49,7 +51,7 @@ export default function App() {
         <Route path="/admin/products" element={<AdminLayout><ProductManagement /></AdminLayout>} />
         <Route path="/admin/shop" element={<AdminLayout><ShopManagement /></AdminLayout>} />
         <Route path="/admin/orders" element={<AdminLayout><OrderManagement /></AdminLayout>} />
-        <Route path="/admin/customers" element={<AdminLayout><div className="p-4 bg-white rounded-xl border p-6 font-bold">Customer Management</div></AdminLayout>} />
+        <Route path="/admin/customers" element={<AdminLayout><CustomerManagement /></AdminLayout>} />
         <Route path="/admin/system" element={<AdminLayout><UserManagement /></AdminLayout>} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
