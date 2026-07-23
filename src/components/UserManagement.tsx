@@ -96,6 +96,9 @@ export function UserManagement() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<StaffUser | null>(null);
 
+  // Global Shopping Mall ON/OFF (Moved to siteadmin only)
+  const [showShoppingMall, setShowShoppingMall] = useState(true);
+
   // Form State
   const [newId, setNewId] = useState('');
   const [newName, setNewName] = useState('');
@@ -110,6 +113,12 @@ export function UserManagement() {
   const [permProducts, setPermProducts] = useState(true);
 
   useEffect(() => {
+    // Show Shopping Mall
+    const savedMall = localStorage.getItem('show_shopping_mall');
+    if (savedMall !== null) {
+      setShowShoppingMall(JSON.parse(savedMall));
+    }
+
     const saved = localStorage.getItem('admin_staff_users');
     if (saved) {
       try {
@@ -123,6 +132,11 @@ export function UserManagement() {
       localStorage.setItem('admin_staff_users', JSON.stringify(initialStaffUsers));
     }
   }, []);
+
+  const handleToggleShoppingMall = (enabled: boolean) => {
+    setShowShoppingMall(enabled);
+    localStorage.setItem('show_shopping_mall', JSON.stringify(enabled));
+  };
 
   const saveStaffUsers = (users: StaffUser[]) => {
     setStaffUsers(users);
@@ -223,18 +237,50 @@ export function UserManagement() {
       {/* Header */}
       <div className="flex justify-between items-end border-b border-outline-variant pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">직원 계정 및 권한 관리 (Staff & Role Management)</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 text-xs font-bold bg-purple-100 text-purple-700 rounded-full">
+              siteadmin (최고관리자 전용)
+            </span>
+          </div>
+          <h2 className="text-2xl font-bold text-on-surface">권한등록 및 시스템 제어 (Permission Management)</h2>
           <p className="text-sm text-on-surface-variant mt-1">
-            Site Admin이 직원 ID/비번을 생성 및 삭제하고, **쇼핑몰 관리, 주문/물류 관리, 콘텐츠 관리, 사이트 관리** 권한을 부여합니다.
+            Site Admin 전용 메뉴입니다. **쇼핑몰 전체 공개 ON/OFF**, 직원 계정 생성/삭제 및 개별 메뉴별 권한을 부여합니다.
           </p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-5 py-2.5 bg-secondary text-white rounded-lg text-sm font-semibold hover:bg-secondary/90 transition-colors shadow-sm flex items-center gap-2"
+          className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-[18px]">person_add</span>
           신규 직원 등록 (Add Staff)
         </button>
+      </div>
+
+      {/* Global Shopping Mall ON/OFF Control Widget (siteadmin only) */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px] text-amber-700">storefront</span>
+            <h3 className="font-bold text-base text-slate-900">쇼핑몰 공개 운영 설정 (Shopping Mall Global Status)</h3>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            사이트 전체에서 쇼핑몰(Shop) 관련 메뉴 및 장바구니/주문 기능의 공개 여부를 설정합니다. (일반 직원 수정 불가)
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-xs font-bold ${showShoppingMall ? 'text-emerald-600' : 'text-slate-400'}`}>
+            {showShoppingMall ? '● 쇼핑몰 공개 (ON)' : '○ 쇼핑몰 비공개 (OFF)'}
+          </span>
+          <label className="relative inline-flex items-center cursor-pointer shrink-0">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={showShoppingMall}
+              onChange={(e) => handleToggleShoppingMall(e.target.checked)}
+            />
+            <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
+          </label>
+        </div>
       </div>
 
       {/* Staff Users Table */}

@@ -2,12 +2,15 @@ import { ReactNode, useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { StaffPermissions } from './UserManagement';
 
+import { useLocation } from 'react-router-dom';
+
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [userName, setUserName] = useState('최고 관리자');
   const [userRole, setUserRole] = useState('superadmin');
@@ -32,8 +35,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     const savedName = localStorage.getItem('admin_logged_user_name');
     if (savedName) setUserName(savedName);
 
-    const savedRole = localStorage.getItem('admin_logged_user_role');
-    if (savedRole) setUserRole(savedRole);
+    const savedRole = localStorage.getItem('admin_logged_user_role') || 'superadmin';
+    setUserRole(savedRole);
 
     const savedPerms = localStorage.getItem('admin_logged_user_permissions');
     if (savedPerms) {
@@ -43,7 +46,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         // default
       }
     }
-  }, [navigate]);
+
+    // STRICT URL GUARD: Only superadmin (siteadmin) can access /admin/system (권한등록)
+    if (location.pathname === '/admin/system' && savedRole !== 'superadmin') {
+      alert('권한등록 메뉴는 siteadmin(최고관리자) 전용 메뉴입니다.');
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [navigate, location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_logged_in');
@@ -62,11 +71,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { name: '쇼핑몰 관리', path: '/admin/shop', icon: 'shopping_cart', permKey: 'shop' },
     { name: '주문확인 & 물류관리', path: '/admin/orders', icon: 'local_shipping', permKey: 'orders' },
     { name: '고객 관리', path: '/admin/customers', icon: 'group', permKey: 'customers' },
-    { name: '직원 & 권한 관리', path: '/admin/system', icon: 'manage_accounts', permKey: 'system' },
+    { name: '권한등록', path: '/admin/system', icon: 'manage_accounts', permKey: 'system' },
   ];
 
   // Filter sidebar menus based on assigned permissions
+  // ONLY siteadmin (superadmin) can see '권한등록' (/admin/system)
   const visibleMenuItems = allMenuItems.filter((item) => {
+    if (item.permKey === 'system') {
+      return userRole === 'superadmin';
+    }
     if (userRole === 'superadmin') return true;
     const key = item.permKey as keyof StaffPermissions;
     return userPermissions[key] !== false;

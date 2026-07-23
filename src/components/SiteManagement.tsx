@@ -149,29 +149,8 @@ export function SiteManagement() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Side: General Menu Configurations */}
+        {/* Left Side: Contact Us & Resend Email Settings */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
-            <h3 className="text-lg font-semibold text-on-surface mb-4">기본 노출 설정</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm font-medium text-on-surface block">쇼핑몰 메뉴 노출</span>
-                  <span className="text-xs text-on-surface-variant">공개 페이지에서 쇼핑몰(Shop) 관련 메뉴를 숨기거나 표시합니다.</span>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer shrink-0">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={showShoppingMall}
-                    onChange={(e) => setShowShoppingMall(e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-                </label>
-              </div>
-            </div>
-          </div>
-
           <div className="bg-white p-6 rounded-xl shadow-sm border border-outline-variant">
             <h3 className="text-lg font-semibold text-on-surface mb-4">대표 연락처 설정 (Contact Us)</h3>
             <div className="space-y-4">
