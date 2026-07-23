@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Order, CourierCompany, initialOrders } from '../types/OrderTypes';
+import { CourierTrackingModal } from './CourierTrackingModal';
 
 export function OrderManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -10,6 +11,9 @@ export function OrderManagement() {
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
   const [selectedCourier, setSelectedCourier] = useState<CourierCompany>('CJ대한통운');
   const [inputTrackingNo, setInputTrackingNo] = useState('');
+
+  // Live Tracking Modal State
+  const [activeTrackingOrder, setActiveTrackingOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     const savedOrders = localStorage.getItem('shop_orders');
@@ -242,17 +246,26 @@ export function OrderManagement() {
                       ) : (
                         <div className="space-y-1 text-center">
                           {ord.trackingNumber ? (
-                            <div>
+                            <div className="space-y-1">
                               <span className="px-2 py-0.5 text-[11px] font-bold bg-slate-100 text-slate-700 rounded border border-slate-200">
                                 {ord.courier || 'CJ대한통운'}
                               </span>
-                              <p className="text-xs font-mono text-slate-900 font-bold mt-1">{ord.trackingNumber}</p>
-                              <button
-                                onClick={() => handleStartEditCourier(ord)}
-                                className="text-[11px] text-amber-800 underline font-bold hover:text-amber-900 mt-1"
-                              >
-                                송장 수정
-                              </button>
+                              <p className="text-xs font-mono text-slate-900 font-bold">{ord.trackingNumber}</p>
+                              <div className="flex gap-1 justify-center pt-1">
+                                <button
+                                  onClick={() => setActiveTrackingOrder(ord)}
+                                  className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg transition-colors flex items-center gap-1 shadow-xs"
+                                >
+                                  <span className="material-symbols-outlined text-[13px]">search</span>
+                                  API 실시간 추적
+                                </button>
+                                <button
+                                  onClick={() => handleStartEditCourier(ord)}
+                                  className="px-2 py-1 border border-slate-300 text-slate-700 text-[11px] font-bold rounded-lg hover:bg-slate-100"
+                                >
+                                  수정
+                                </button>
+                              </div>
                             </div>
                           ) : (
                             <button
@@ -298,6 +311,16 @@ export function OrderManagement() {
           </table>
         </div>
       </div>
+      {/* Live Courier API Tracking Modal */}
+      {activeTrackingOrder && (
+        <CourierTrackingModal
+          isOpen={!!activeTrackingOrder}
+          courier={activeTrackingOrder.courier || 'CJ대한통운'}
+          trackingNumber={activeTrackingOrder.trackingNumber || ''}
+          orderId={activeTrackingOrder.id}
+          onClose={() => setActiveTrackingOrder(null)}
+        />
+      )}
     </div>
   );
 }

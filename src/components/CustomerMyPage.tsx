@@ -34,6 +34,7 @@ export function CustomerMyPage() {
 
   const [currentUser, setCurrentUser] = useState<CustomerUser | null>(null);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
+  const [activeTrackingOrder, setActiveTrackingOrder] = useState<Order | null>(null);
 
   // Login Form
   const [loginEmail, setLoginEmail] = useState('');
@@ -426,14 +427,13 @@ export function CustomerMyPage() {
                           </span>
                           <span className="font-mono text-xs font-bold text-slate-900">{guestFoundOrder.trackingNumber}</span>
                         </div>
-                        <a
-                          href={getCourierTrackingUrl(guestFoundOrder.courier, guestFoundOrder.trackingNumber)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors"
+                        <button
+                          onClick={() => setActiveTrackingOrder(guestFoundOrder)}
+                          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm flex items-center gap-1"
                         >
-                          실시간 위치 추적 ➔
-                        </a>
+                          <span className="material-symbols-outlined text-[16px]">local_shipping</span>
+                          🔍 API 실시간 배송추적
+                        </button>
                       </div>
                     ) : (
                       <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
@@ -546,15 +546,13 @@ export function CustomerMyPage() {
 
                     <div className="flex gap-2 w-full md:w-auto">
                       {ord.trackingNumber && (
-                        <a
-                          href={getCourierTrackingUrl(ord.courier, ord.trackingNumber)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex-1 md:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1"
+                        <button
+                          onClick={() => setActiveTrackingOrder(ord)}
+                          className="flex-1 md:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-xs flex items-center justify-center gap-1.5"
                         >
                           <span className="material-symbols-outlined text-[16px]">local_shipping</span>
-                          {ord.courier} 배송 추적
-                        </a>
+                          🔍 {ord.courier || '택배'} API 실시간 추적
+                        </button>
                       )}
                     </div>
                   </div>
@@ -626,6 +624,16 @@ export function CustomerMyPage() {
             </div>
           )}
         </div>
+      )}
+      {/* Live Courier API Tracking Modal */}
+      {activeTrackingOrder && (
+        <CourierTrackingModal
+          isOpen={!!activeTrackingOrder}
+          courier={activeTrackingOrder.courier || 'CJ대한통운'}
+          trackingNumber={activeTrackingOrder.trackingNumber || ''}
+          orderId={activeTrackingOrder.id}
+          onClose={() => setActiveTrackingOrder(null)}
+        />
       )}
     </div>
   );
