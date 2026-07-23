@@ -224,6 +224,51 @@ CREATE POLICY "Staff manage inquiries"
     FOR ALL
     USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
 
+-- --------------------------------------------------------------------
+-- 8. Payments Table (토스페이먼츠 및 PG 지급결제 내역 DB)
+-- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id TEXT NOT NULL,
+    user_id TEXT,
+    pg TEXT DEFAULT 'TOSSPAYMENTS',
+    payment_key TEXT,
+    transaction_id TEXT,
+    amount NUMERIC NOT NULL CHECK (amount >= 0),
+    vat NUMERIC DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'READY' CHECK (status IN ('READY', 'DONE', 'CANCELED', 'PARTIAL_CANCELED', 'ABORTED', 'EXPIRED')),
+    method TEXT, -- 카드, 계좌이체, 가상계좌, 간편결제, 토스페이
+    approved_at TIMESTAMPTZ,
+    cancelled_at TIMESTAMPTZ,
+    refunded_amount NUMERIC DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public insert payments" ON public.payments;
+DROP POLICY IF EXISTS "Customers view own payments" ON public.payments;
+DROP POLICY IF EXISTS "Staff manage payments" ON public.payments;
+
+-- Customers / Public can insert payment records on checkout completion
+CREATE POLICY "Public insert payments"
+    ON public.payments
+    FOR INSERT
+    WITH CHECK (true);
+
+-- Customers can view their own payment transactions
+CREATE POLICY "Customers view own payments"
+    ON public.payments
+    FOR SELECT
+    USING (user_id = auth.uid()::text OR user_id = current_setting('request.jwt.claims', true)::json ->> 'sub');
+
+-- Staff / Admin can manage and view all payment transactions
+CREATE POLICY "Staff manage payments"
+    ON public.payments
+    FOR ALL
+    USING ((auth.jwt() ->> 'role') IN ('superadmin', 'staff'));
+
 -- ====================================================================
 -- End of Schema
 -- ====================================================================

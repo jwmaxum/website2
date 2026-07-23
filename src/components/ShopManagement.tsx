@@ -1,9 +1,13 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { FAQItem, CustomerInquiry, initialFAQs, initialInquiries } from '../types/SupportTypes';
 import { sendInquiryReplyEmail } from '../services/emailService';
+import { TossPaymentsConfig, getTossPaymentsConfig, saveTossPaymentsConfig } from '../lib/tossPayments';
 
 export function ShopManagement() {
-  const [activeTab, setActiveTab] = useState<'inquiry' | 'faq'>('inquiry');
+  const [activeTab, setActiveTab] = useState<'inquiry' | 'faq' | 'payment'>('inquiry');
+
+  // Toss Payments PG Config State
+  const [tossConfig, setTossConfig] = useState<TossPaymentsConfig>(getTossPaymentsConfig());
 
   // FAQs & Inquiries State
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
@@ -189,17 +193,130 @@ export function ShopManagement() {
           1:1 고객 온라인 문의 ({pendingInquiriesCount}건 미처리)
         </button>
         <button
-          onClick={() => setActiveTab('faq')}
+          onClick={() => setActiveTab('payment')}
           className={`px-5 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${
-            activeTab === 'faq'
+            activeTab === 'payment'
               ? 'border-secondary text-secondary'
               : 'border-transparent text-on-surface-variant hover:text-on-surface'
           }`}
         >
-          <span className="material-symbols-outlined text-[18px]">quiz</span>
-          자주 묻는 질문 (FAQ 관리 - {faqs.length}개)
+          <span className="material-symbols-outlined text-[18px]">credit_card</span>
+          💳 토스페이먼츠 PG 결제 연동 설정
         </button>
       </div>
+
+      {/* TAB 3: 토스페이먼츠 PG 결제 연동 설정 */}
+      {activeTab === 'payment' && (
+        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+          <div className="border-b border-slate-100 pb-4 flex justify-between items-center flex-wrap gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[24px] text-blue-600">payments</span>
+                토스페이먼츠 (Toss Payments) 지급결제(PG) 설정
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                공식 토스페이먼츠 API Key (Client Key, Secret Key) 및 가맹점 정보를 등록하여 자사몰 메인 결제 시스템으로 반영합니다.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                saveTossPaymentsConfig(tossConfig);
+                alert('토스페이먼츠 PG 지급결제 설정이 저장되었습니다!');
+              }}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[16px]">save</span>
+              PG 설정 저장하기
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left: Key & Toggle Settings */}
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-50/60 rounded-2xl border border-blue-100 flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-slate-900 block">토스페이먼츠 PG 연동 활성화</span>
+                  <span className="text-[11px] text-slate-500">체크 시 장바구니 결제창에서 토스페이먼츠 결제호출을 실행합니다.</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={tossConfig.isEnabled}
+                  onChange={(e) => setTossConfig({ ...tossConfig, isEnabled: e.target.checked })}
+                  className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  클라이언트 키 (Client Key) <span className="text-rose-500">*필수</span>
+                </label>
+                <input
+                  type="text"
+                  value={tossConfig.clientKey}
+                  onChange={(e) => setTossConfig({ ...tossConfig, clientKey: e.target.value })}
+                  placeholder="test_ck_..."
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 font-bold"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  토스페이먼츠 상점 관리자(https://developers.tosspayments.com) API 키 메뉴에서 발급받은 API Client Key입니다.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  시크릿 키 (Secret Key) <span className="text-slate-400">(백엔드 승인/취소용)</span>
+                </label>
+                <input
+                  type="password"
+                  value={tossConfig.secretKey}
+                  onChange={(e) => setTossConfig({ ...tossConfig, secretKey: e.target.value })}
+                  placeholder="test_sk_..."
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900"
+                />
+              </div>
+            </div>
+
+            {/* Right: MID & Method Settings */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">가맹점 표시 상호명 (MID / Shop Name)</label>
+                <input
+                  type="text"
+                  value={tossConfig.mid}
+                  onChange={(e) => setTossConfig({ ...tossConfig, mid: e.target.value })}
+                  placeholder="조선미녀 공식몰"
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">기본 결제 방식 (Default Payment Method)</label>
+                <select
+                  value={tossConfig.defaultMethod}
+                  onChange={(e) => setTossConfig({ ...tossConfig, defaultMethod: e.target.value })}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900"
+                >
+                  <option value="카드">신용 · 체크카드 (국내/해외 카드)</option>
+                  <option value="토스페이">토스페이 (TossPay 간편결제)</option>
+                  <option value="계좌이체">실시간 계좌이체</option>
+                  <option value="가상계좌">가상계좌 (무통장 입금)</option>
+                </select>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[16px] text-blue-600">verified</span>
+                  토스페이먼츠 API 연동 가이드
+                </span>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  • 장바구니에서 결제 진행 시 토스페이먼츠 SDK V1/V2가 연동됩니다.<br />
+                  • 결제 완료 시 13가지 결제 상세 필드(<code className="font-mono text-blue-700">order_id</code>, <code className="font-mono text-blue-700">payment_key</code>, <code className="font-mono text-blue-700">transaction_id</code>, <code className="font-mono text-blue-700">amount</code>, <code className="font-mono text-blue-700">vat</code>, <code className="font-mono text-blue-700">status</code> 등)가 Supabase DB <code className="font-mono text-blue-700">payments</code> 테이블에 자동으로 저장됩니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: 1:1 고객 온라인 문의 답변 */}
       {activeTab === 'inquiry' && (
